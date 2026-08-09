@@ -128,3 +128,7 @@
     @apply font-sans;
   }
 }
+
+.flex-center {
+  @apply flex items-center justify-center;
+}
