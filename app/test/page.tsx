@@ -1,8 +1,8 @@
 "use client"
-import { Upload } from "lucide-react"
+import { CloudUpload } from "lucide-react"
 import React from "react"
 
-export default function paeg() {
+export default function page() {
   const [isDragging, setIsDragging] = React.useState(false)
   const [files, setFiles] = React.useState<File[]>([])
 
@@ -35,8 +35,8 @@ export default function paeg() {
   }
 
   return (
-    <div className="flex min-h-screen h-screen items-center justify-center">
-      <main className="text-center w-full h-full flex items-center justify-center flex-col">
+    <div className="flex min-h-screen items-center justify-center">
+      <main className="text-center">
         <h1 className="text-2xl font-semibold">Upload Documents</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Drag files here or click to upload.
@@ -46,8 +46,8 @@ export default function paeg() {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`border-2 border-dashed rounded mt-4 w-2/3 h-1/2 flex flex-col items-center justify-center cursor-pointer bg-accent ${
-            isDragging ? "border-blue-500 bg-blue-50" : "border-gray-400"
+          className={`border-2 border-dashed rounded mt-4 w-80 h-40 flex flex-col items-center justify-center cursor-pointer ${
+            isDragging ? "border-blue-500 bg-red-50" : "border-gray-400"
           }`}
         >
           <input
@@ -58,7 +58,7 @@ export default function paeg() {
             onChange={handleFileSelect}
           />
           <label htmlFor="file-input" className="flex flex-col items-center">
-            <Upload className="mb-2" />
+            <CloudUpload className="mb-2" />
             <p>Click or drop files</p>
           </label>
         </div>
