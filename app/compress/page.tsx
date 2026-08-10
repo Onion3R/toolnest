@@ -1,7 +1,8 @@
 "use client"
 import { Upload } from "lucide-react"
 import React from "react"
-
+import imageCompression from "browser-image-compression"
+import { Button } from "@/components/ui/button"
 export default function paeg() {
 	const [isDragging, setIsDragging] = React.useState(false)
 	const [files, setFiles] = React.useState<File[]>([])
@@ -32,6 +33,35 @@ export default function paeg() {
 			setFiles(selectedFiles)
 			console.log("Selected files:", selectedFiles)
 		}
+	}
+
+
+	async function compressImage(file: File) {
+		const options = {
+			maxSizeMB: 1,
+			maxWidthOrHeight: 1920,
+			useWebWorker: true,
+		};
+
+		try {
+			const compressedFile = await imageCompression(file, options);
+
+			// Automatically download when compression finishes
+			const url = URL.createObjectURL(compressedFile);
+
+			const link = document.createElement("a");
+			link.href = url;
+			link.download = `compressed-${file.name}`;
+
+			link.click();
+
+			URL.revokeObjectURL(url);
+		} catch (error) {
+			console.error("Compression failed:", error);
+
+		}
+
+
 	}
 
 	return (
@@ -65,13 +95,18 @@ export default function paeg() {
 				</div>
 
 				{files.length > 0 && (
-					<ul className="mt-4 text-left">
-						{files.map((file, idx) => (
-							<li key={idx}>
-								{file.name} ({Math.round(file.size / 1024)} KB)
-							</li>
-						))}
-					</ul>
+
+					<div>
+						<ul className="mt-4 text-left">
+							{files.map((file, idx) => (
+								<li key={idx}>
+									{file.name} ({Math.round(file.size / 1024)} KB)
+								</li>
+							))}
+						</ul>
+						<Button onClick={() => compressImage(files[0])}>Compress Image</Button>
+					</div>
+
 				)}
 			</main>
 		</div>
