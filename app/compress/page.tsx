@@ -1,5 +1,5 @@
 "use client"
-import { Upload, Image } from "lucide-react"
+import { Upload, Image, X } from "lucide-react"
 import React from "react"
 import imageCompression from "browser-image-compression"
 import { Button } from "@/components/ui/button"
@@ -83,6 +83,10 @@ export default function paeg() {
 
 	}
 
+	const handleRemoveFile = (index: number) => {
+		setFiles(files.filter((_, i) => i !== index));
+	}
+
 	const itemsContainer = {
 		hidden: {},
 		show: {
@@ -98,7 +102,7 @@ export default function paeg() {
 	}
 
 	return (
-		<div className="flex min-h-screen h-screen items-center justify-center">
+		<div className="flex min-h-screen h-full items-center justify-center p-4">
 			<main className="text-center  flex items-center justify-center flex-col">
 				<div className="flex-center flex-col ">
 
@@ -142,15 +146,20 @@ export default function paeg() {
 										variants={itemsVariant}
 										initial="hidden"
 										animate="visible"
-										className=" px-6 py-3 border w-full flex gap-4 rounded"
+										className=" px-6 py-3 border w-full flex justify-between items-center  rounded"
 									>
-										<div className="bg-accent flex-center  rounded-2xl w-10 h-10">
-											<Image strokeWidth={1}/>
+										<div className="flex-center gap-4">
+											<div className="bg-accent flex-center  rounded-2xl w-10 h-10">
+												<Image strokeWidth={1} />
+											</div>
+											<div>
+												{file.name}
+												<p className="text-muted-foreground">JPG  • {Math.round(file.size / 1024)} KB</p>
+											</div>
 										</div>
-										<div>
-											{file.name}
-											<p className="text-muted-foreground">JPG  • {Math.round(file.size / 1024)} KB</p>
-										</div>
+										<Button variant="ghost" onClick={() => handleRemoveFile(idx)}>
+											<X />
+										</Button>
 									</motion.li>
 								))}
 							</ul>
