@@ -1,5 +1,5 @@
 "use client"
-import { Upload } from "lucide-react"
+import { Upload, Image } from "lucide-react"
 import React from "react"
 import imageCompression from "browser-image-compression"
 import { Button } from "@/components/ui/button"
@@ -124,7 +124,7 @@ export default function paeg() {
 							</div>
 							<h1 className="text-2xl font-semibold">Upload Documents</h1>
 							<p className="mt-2 text-sm text-muted-foreground">
-								Maximum files 5 - Format Supported JPEG, PNG, WEPT
+								Maximum files 5 • Format Supported JPEG, PNG, WEPT
 							</p>
 						</label>
 					</div>
@@ -132,9 +132,9 @@ export default function paeg() {
 
 
 				{files.length > 0 && (
-					<div className="flex-center flex-col w-full">
+					<div className="flex-center flex-col w-200">
 
-						<motion.div variants={itemsContainer} initial="hidden" animate="show">
+						<motion.div variants={itemsContainer} initial="hidden" animate="show" className="w-full">
 							<ul className="mt-4 text-left space-y-2 text-sm">
 								{files.map((file, idx) => (
 									<motion.li
@@ -142,9 +142,15 @@ export default function paeg() {
 										variants={itemsVariant}
 										initial="hidden"
 										animate="visible"
-										className=" px-4 py-1 border w-full"
+										className=" px-6 py-3 border w-full flex gap-4 rounded"
 									>
-										{file.name} <p className="text-muted-foreground">({Math.round(file.size / 1024)} KB)</p>
+										<div className="bg-accent flex-center  rounded-2xl w-10 h-10">
+											<Image strokeWidth={1}/>
+										</div>
+										<div>
+											{file.name}
+											<p className="text-muted-foreground">JPG  • {Math.round(file.size / 1024)} KB</p>
+										</div>
 									</motion.li>
 								))}
 							</ul>
