@@ -5,14 +5,14 @@ import imageCompression from "browser-image-compression"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { motion } from "motion/react";
-import SideBar from "@/components/ui/imgcompress/SideBar"
+import SideBar from "@/components/imgcompress/SideBar"
 
 export default function page() {
 	const [isDragging, setIsDragging] = React.useState(false)
 	const [files, setFiles] = React.useState<File[]>([])
 	const [progress, setProgress] = React.useState(0);
 	const [compressingFile, setCompressingFile] = React.useState<string | null>(null)
-
+	const [settings, setSettings] = React.useState({ maxSizeMB: 1, initialQuality: 0.8, maxWidthOrHeight: 1920, useWebWorker: true, format: "JPEG" })
 	function handleDragOver(event: React.DragEvent<HTMLDivElement>) {
 		event.preventDefault()
 		setIsDragging(true)
@@ -50,9 +50,11 @@ export default function page() {
 	async function compressImage(files: File[]) {
 
 		const options = {
-			maxSizeMB: 1,
-			maxWidthOrHeight: 1920,
-			useWebWorker: true,
+			maxSizeMB: settings.maxSizeMB,
+			initialQuality: settings.initialQuality,
+			maxWidthOrHeight: settings.maxWidthOrHeight,
+			useWebWorker: settings.useWebWorker,
+			format: settings.format,
 
 			onProgress: (progress: number) => {
 				setProgress(progress);
@@ -140,7 +142,7 @@ export default function page() {
 							</div>``
 							<h1 className="text-2xl font-semibold">Upload Documents</h1>
 							<p className="mt-2 text-sm text-muted-foreground">
-								Maximum files 5 • Format Supported JPEG, PNG, WEPT
+								Maximum files 5 • Format Supported JPEG, PNG, WEBP
 							</p>
 						</label>
 					</div>
@@ -188,7 +190,7 @@ export default function page() {
 
 				}
 			</motion.main>
-			<SideBar files={files} compressImage={compressImage} />
+			<SideBar files={files} compressImage={compressImage} settings={settings} setSettings={setSettings} />
 		</div>
 	)
 }
