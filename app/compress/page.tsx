@@ -102,12 +102,11 @@ export default function paeg() {
 	}
 
 	return (
-		<div className="flex min-h-screen h-full items-center justify-center p-4">
-			<main className="text-center  flex items-center justify-center flex-col">
-				<div className="flex-center flex-col ">
-
-
-
+		<div className="flex min-h-screen h-full   p-4">
+			<motion.main
+				animate={files.length > 0 ? { width: "75%" } : { width: "100%" }}
+				className="  flex-center  flex-col">
+				<div >
 					<div
 						onDragOver={handleDragOver}
 						onDragLeave={handleDragLeave}
@@ -163,13 +162,18 @@ export default function paeg() {
 									</motion.li>
 								))}
 							</ul>
-							<Button size="lg" className="mt-4" onClick={() => compressImage(files)}>Compress Image</Button>
+
 						</motion.div>
 					</div>
 				)
 
 				}
-			</main>
+			</motion.main>
+			<motion.aside
+				animate={files.length > 0 ? { width: "25%" } : { width: "0%" }}
+				className="fixed bottom-0 top-0 w-1/4  right-0 bg-accent ">
+				<Button size="lg" className="mt-4" onClick={() => compressImage(files)}>Compress Image</Button>
+			</motion.aside>
 		</div>
 	)
 }
