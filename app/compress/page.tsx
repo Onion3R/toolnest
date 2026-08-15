@@ -4,37 +4,9 @@ import React from "react"
 import imageCompression from "browser-image-compression"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { Slider } from "@/components/ui/slider"
 import { motion } from "motion/react";
-import {
-	InputGroup,
-	InputGroupAddon,
-	InputGroupButton,
-	InputGroupInput,
-	InputGroupText,
-	InputGroupTextarea,
-} from "@/components/ui/input-group"
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select"
-import {
-	Field,
-	FieldDescription,
-	FieldGroup,
-	FieldLabel,
-	FieldSet,
-} from "@/components/ui/field"
+import SideBar from "@/components/ui/imgcompress/SideBar"
 
-const items = [
-	{ label: "WebP", value: "WebP" },
-	{ label: "JPEG", value: "JPEG" },
-	{ label: "PNG", value: "PNG" },
-]
 export default function page() {
 	const [isDragging, setIsDragging] = React.useState(false)
 	const [files, setFiles] = React.useState<File[]>([])
@@ -216,83 +188,7 @@ export default function page() {
 
 				}
 			</motion.main>
-			<motion.aside
-				animate={files.length === 0 ? { width: "25%" } : { width: "0%" }}
-				className="fixed bottom-0 top-0 w-1/4  right-0 bg-accent ">
-				<div className="p-4 flex-center flex-col">
-
-					<FieldSet className="w-full max-w-xs">
-
-						<Field>
-							<FieldLabel htmlFor="feedback">Target Size</FieldLabel>
-							<InputGroup>
-								<InputGroupInput
-									id="inline-end-input"
-									type="text"
-									placeholder="0"
-								/>
-								<InputGroupAddon align="inline-end">
-
-								</InputGroupAddon>
-							</InputGroup>
-							<FieldDescription>
-								Set desired file size for compression.
-							</FieldDescription>
-						</Field>
-
-
-						<Field>
-							<FieldLabel htmlFor="feedback"> Quality</FieldLabel>
-							<Slider defaultValue={[33]} max={100} step={1} />
-							<FieldDescription>
-								Set desired file size for compression.
-							</FieldDescription>
-						</Field>
-
-						<Field>
-							<FieldLabel htmlFor="feedback">Maximum Resolution    </FieldLabel>
-							<InputGroup>
-								<InputGroupInput
-									id="inline-end-input"
-									type="text"
-									placeholder="0"
-								/>
-								<InputGroupAddon align="inline-end">
-
-								</InputGroupAddon>
-							</InputGroup>
-							<FieldDescription>
-								Set desired file size for compression.
-							</FieldDescription>
-						</Field>
-						<Field>
-							<FieldLabel htmlFor="feedback">Maximum Resolution    </FieldLabel>
-							<Select items={items}>
-								<SelectTrigger className="w-[180px]">
-									<SelectValue placeholder="Theme" />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectGroup>
-										{items.map((item) => (
-											<SelectItem key={item.value} value={item.value}>
-												{item.label}
-											</SelectItem>
-										))}
-									</SelectGroup>
-								</SelectContent>
-							</Select>
-							<FieldDescription>
-								Set desired file size for compression.
-							</FieldDescription>
-						</Field>
-
-					</FieldSet>
-
-
-					<Button size="lg" className="mt-4 w-full" onClick={() => compressImage(files)}>Compress Image</Button>
-				</div>
-
-			</motion.aside>
+			<SideBar files={files} compressImage={compressImage} />
 		</div>
 	)
 }
