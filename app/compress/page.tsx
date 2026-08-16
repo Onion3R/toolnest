@@ -7,12 +7,15 @@ import { Progress } from "@/components/ui/progress"
 import { motion } from "motion/react";
 import SideBar from "@/components/imgcompress/SideBar"
 
+const values = [{ id: 'low', label: 'Low', value: 0.2 }, { id: 'medium', label: 'Medium', value: 0.5 }, { id: 'high', label: 'High', value: 0.8 }]
+
 export default function page() {
 	const [isDragging, setIsDragging] = React.useState(false)
 	const [files, setFiles] = React.useState<File[]>([])
 	const [progress, setProgress] = React.useState(0);
 	const [compressingFile, setCompressingFile] = React.useState<string | null>(null)
-	const [settings, setSettings] = React.useState({ maxSizeMB: 1, initialQuality: 0.8, maxWidthOrHeight: 1920, useWebWorker: true, format: "JPEG" })
+	// const [settings, setSettings] = React.useState({ maxSizeMB: 1, initialQuality: 0.8, maxWidthOrHeight: 1920, useWebWorker: true, format: "JPEG" })
+	const [settings, setSettings] = React.useState({ id: 'low', format: 'JPEG' })
 	function handleDragOver(event: React.DragEvent<HTMLDivElement>) {
 		event.preventDefault()
 		setIsDragging(true)
@@ -49,17 +52,19 @@ export default function page() {
 
 	async function compressImage(files: File[]) {
 
-		const options = {
-			maxSizeMB: settings.maxSizeMB,
-			initialQuality: settings.initialQuality,
-			maxWidthOrHeight: settings.maxWidthOrHeight,
-			useWebWorker: settings.useWebWorker,
-			format: settings.format,
+		// const options = {
+		// 	maxSizeMB: settings.maxSizeMB,
+		// 	initialQuality: settings.initialQuality,
+		// 	maxWidthOrHeight: settings.maxWidthOrHeight,
+		// 	useWebWorker: settings.useWebWorker,
+		// 	format: settings.format,
 
-			onProgress: (progress: number) => {
-				setProgress(progress);
-			},
-		};
+		// 	onProgress: (progress: number) => {
+		// 		setProgress(progress);
+		// 	},
+		// };
+
+
 
 		console.log('clicking')
 		console.log('files', files)
@@ -68,6 +73,18 @@ export default function page() {
 
 
 			for (const file of files) {
+				const value = handleImgCompressCalculation(file)
+				console.log('final value', value)
+				const options = {
+					maxSizeMB: value,
+					useWebWorker: true,
+					format: settings.format,
+
+					onProgress: (progress: number) => {
+						setProgress(progress);
+					},
+				};
+
 				setCompressingFile(file.name);
 				setProgress(0);
 
@@ -102,6 +119,14 @@ export default function page() {
 		setFiles(files.filter((_, i) => i !== index));
 	}
 
+	const handleImgCompressCalculation = (file: File) => {
+		const fileSize = Math.round(file.size / 1024) // Convert to KB
+		const selectedvalue = values.find((value) => value.id === settings.id)?.value || 0.5;
+		const minusedValue = fileSize * selectedvalue
+		const finalValue = (fileSize - minusedValue) / 1024 // Convert to MB
+		console.log('calcualtions', minusedValue, finalValue, fileSize)
+		return finalValue
+	}
 	const itemsContainer = {
 		hidden: {},
 		show: {
@@ -170,6 +195,7 @@ export default function page() {
 												<div>
 													{file.name}
 													<p className="text-muted-foreground">JPG  • {Math.round(file.size / 1024)} KB</p>
+													<p className="text-muted-foreground">{handleImgCompressCalculation(file)}</p>
 												</div>
 											</div>
 											<Button variant="ghost" onClick={() => handleRemoveFile(idx)}>

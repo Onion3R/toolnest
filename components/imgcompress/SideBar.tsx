@@ -9,6 +9,8 @@ import {
   InputGroupText,
   InputGroupTextarea,
 } from "@/components/ui/input-group"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
   Select,
   SelectContent,
@@ -19,6 +21,7 @@ import {
 } from "@/components/ui/select"
 import {
   Field,
+  FieldContent,
   FieldDescription,
   FieldGroup,
   FieldLabel,
@@ -52,82 +55,40 @@ function SideBar({ files, compressImage, settings, setSettings }: { files: File[
               </div>
               <TabsList>
                 <TabsTrigger value="account">Account</TabsTrigger>
-                <TabsTrigger value="advance">Advance</TabsTrigger>
+                <TabsTrigger value="advance" disabled={true}>Advance</TabsTrigger>
               </TabsList>
             </div>
-            <TabsContent value="account">Make changes to your account here.</TabsContent>
+            <TabsContent value="account">
+              <RadioGroup value={settings.id} className="w-fit" onValueChange={(value) => setSettings({ ...settings, id: value })}>
+                <Field orientation="horizontal">
+                  <RadioGroupItem value="low" id="desc-r1" />
+                  <FieldContent>
+                    <FieldLabel htmlFor="desc-r1">Default</FieldLabel>
+                    <FieldDescription>
+                      Standard spacing for most use cases.
+                    </FieldDescription>
+                  </FieldContent>
+                </Field>
+                <Field orientation="horizontal">
+                  <RadioGroupItem value="medium" id="desc-r2" />
+                  <FieldContent>
+                    <FieldLabel htmlFor="desc-r2">Medium</FieldLabel>
+                    <FieldDescription>Balanced spacing for general use.</FieldDescription>
+                  </FieldContent>
+                </Field>
+                <Field orientation="horizontal">
+                  <RadioGroupItem value="high" id="desc-r3" />
+                  <FieldContent>
+                    <FieldLabel htmlFor="desc-r3">High</FieldLabel>
+                    <FieldDescription>
+                      Maximum spacing for maximum readability.
+                    </FieldDescription>
+                  </FieldContent>
+                </Field>
+              </RadioGroup>
+            </TabsContent>
             <TabsContent value="advance">
-              <Field>
-                <FieldLabel htmlFor="target_size">Target Size</FieldLabel>
-                <InputGroup>
-                  <InputGroupInput
-                    id="inline-end-input"
-                    type="text"
-                    placeholder="0"
-                    value={settings.maxSizeMB ?? ""}
-                    onChange={(e) => setSettings({ ...settings, maxSizeMB: Number(e.target.value) })}
-                  />
-                  <InputGroupAddon align="inline-end">
 
-                  </InputGroupAddon>
-                </InputGroup>
-                <FieldDescription>
-                  Controls how small the resulting file should be.
-                </FieldDescription>
-              </Field>
-
-
-              <Field>
-                <FieldLabel htmlFor="quality"> Quality</FieldLabel>
-                <Slider
-                  value={[quality * 100]}
-                  max={100}
-                  step={1}
-                  onValueChange={(value: number | readonly number[]) => setSettings({ ...settings, initialQuality: Number(value) / 100 })}
-                />
-                <FieldDescription>
-                  Controls how much visual quality to preserve.
-                </FieldDescription>
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="resolution">Maximum Resolution    </FieldLabel>
-                <InputGroup>
-                  <InputGroupInput
-                    id="inline-end-input"
-                    type="text"
-                    placeholder="0"
-                    value={settings.maxWidthOrHeight ?? ""}
-                    onChange={(e) => setSettings({ ...settings, maxWidthOrHeight: Number(e.target.value) })}
-                  />
-                  <InputGroupAddon align="inline-end">
-
-                  </InputGroupAddon>
-                </InputGroup>
-                <FieldDescription>
-                  Controls the resolution.
-                </FieldDescription>
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="format">Format    </FieldLabel>
-                <Select items={items} value={settings.format} onValueChange={(value) => setSettings({ ...settings, format: value })}>
-                  <SelectTrigger className="w-45">
-                    <SelectValue placeholder="Format" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {items.map((item) => (
-                        <SelectItem key={item.value} value={item.value}>
-                          {item.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <FieldDescription>
-                  Set desired file size for compression.
-                </FieldDescription>
-              </Field>
 
             </TabsContent>
           </Tabs>
@@ -138,7 +99,7 @@ function SideBar({ files, compressImage, settings, setSettings }: { files: File[
         <Button size="lg" className="mt-4 w-full" onClick={() => compressImage(files)}>Compress Image</Button>
       </div>
 
-    </motion.aside>
+    </motion.aside >
   )
 }
 
