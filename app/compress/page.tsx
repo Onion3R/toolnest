@@ -1,5 +1,5 @@
 "use client"
-import { Upload, Image, X } from "lucide-react"
+import { Upload, Image, X, Check } from "lucide-react"
 import React from "react"
 import imageCompression from "browser-image-compression"
 import { Button } from "@/components/ui/button"
@@ -14,8 +14,9 @@ export default function page() {
 	const [files, setFiles] = React.useState<File[]>([])
 	const [progress, setProgress] = React.useState(0);
 	const [compressingFile, setCompressingFile] = React.useState<string | null>(null)
+	const [isCompressing, setIsCompressing] = React.useState(false)
 	// const [settings, setSettings] = React.useState({ maxSizeMB: 1, initialQuality: 0.8, maxWidthOrHeight: 1920, useWebWorker: true, format: "JPEG" })
-	const [settings, setSettings] = React.useState({ id: 'low', format: 'JPEG' })
+	const [settings, setSettings] = React.useState({ initialQuality: 0.8, format: 'JPEG' })
 	function handleDragOver(event: React.DragEvent<HTMLDivElement>) {
 		event.preventDefault()
 		setIsDragging(true)
@@ -63,7 +64,16 @@ export default function page() {
 		// 		setProgress(progress);
 		// 	},
 		// };
+		setIsCompressing(true)
+		const options = {
+			initialQuality: settings.initialQuality,
+			useWebWorker: true,
+			format: settings.format,
 
+			onProgress: (progress: number) => {
+				setProgress(progress);
+			},
+		};
 
 
 		console.log('clicking')
@@ -73,17 +83,7 @@ export default function page() {
 
 
 			for (const file of files) {
-				const value = handleImgCompressCalculation(file)
-				console.log('final value', value)
-				const options = {
-					maxSizeMB: value,
-					useWebWorker: true,
-					format: settings.format,
 
-					onProgress: (progress: number) => {
-						setProgress(progress);
-					},
-				};
 
 				setCompressingFile(file.name);
 				setProgress(0);
@@ -110,6 +110,7 @@ export default function page() {
 		} finally {
 			setCompressingFile(null);
 			setProgress(0);
+			setIsCompressing(false)
 		}
 
 
@@ -119,14 +120,6 @@ export default function page() {
 		setFiles(files.filter((_, i) => i !== index));
 	}
 
-	const handleImgCompressCalculation = (file: File) => {
-		const fileSize = Math.round(file.size / 1024) // Convert to KB
-		const selectedvalue = values.find((value) => value.id === settings.id)?.value || 0.5;
-		const minusedValue = fileSize * selectedvalue
-		const finalValue = (fileSize - minusedValue) / 1024 // Convert to MB
-		console.log('calcualtions', minusedValue, finalValue, fileSize)
-		return finalValue
-	}
 	const itemsContainer = {
 		hidden: {},
 		show: {
@@ -195,9 +188,10 @@ export default function page() {
 												<div>
 													{file.name}
 													<p className="text-muted-foreground">JPG  • {Math.round(file.size / 1024)} KB</p>
-													<p className="text-muted-foreground">{handleImgCompressCalculation(file)}</p>
+
 												</div>
 											</div>
+											{ isCompressing && compressingFile != file.name && <Check/>}
 											<Button variant="ghost" onClick={() => handleRemoveFile(idx)}>
 												<X />
 											</Button>

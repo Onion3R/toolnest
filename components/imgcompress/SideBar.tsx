@@ -59,33 +59,39 @@ function SideBar({ files, compressImage, settings, setSettings }: { files: File[
               </TabsList>
             </div>
             <TabsContent value="account">
-              <RadioGroup value={settings.id} className="w-fit" onValueChange={(value) => setSettings({ ...settings, id: value })}>
-                <Field orientation="horizontal">
-                  <RadioGroupItem value="low" id="desc-r1" />
-                  <FieldContent>
-                    <FieldLabel htmlFor="desc-r1">Default</FieldLabel>
-                    <FieldDescription>
-                      Standard spacing for most use cases.
-                    </FieldDescription>
-                  </FieldContent>
-                </Field>
-                <Field orientation="horizontal">
-                  <RadioGroupItem value="medium" id="desc-r2" />
-                  <FieldContent>
-                    <FieldLabel htmlFor="desc-r2">Medium</FieldLabel>
-                    <FieldDescription>Balanced spacing for general use.</FieldDescription>
-                  </FieldContent>
-                </Field>
-                <Field orientation="horizontal">
-                  <RadioGroupItem value="high" id="desc-r3" />
-                  <FieldContent>
-                    <FieldLabel htmlFor="desc-r3">High</FieldLabel>
-                    <FieldDescription>
-                      Maximum spacing for maximum readability.
-                    </FieldDescription>
-                  </FieldContent>
-                </Field>
-              </RadioGroup>
+
+              <Field>
+                <FieldLabel htmlFor="quality"> Quality</FieldLabel>
+                <Slider
+                  value={[quality * 100]}
+                  max={100}
+                  step={1}
+                  onValueChange={(value: number | readonly number[]) => setSettings({ ...settings, initialQuality: Number(value) / 100 })}
+                />
+                <FieldDescription>
+                  Controls how much visual quality to preserve {settings.initialQuality}.
+                </FieldDescription>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="format">Format    </FieldLabel>
+                <Select items={items} value={settings.format} onValueChange={(value) => setSettings({ ...settings, format: value })}>
+                  <SelectTrigger className="w-45">
+                    <SelectValue placeholder="Format" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {items.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FieldDescription>
+                  Set desired file size for compression.
+                </FieldDescription>
+              </Field>
             </TabsContent>
             <TabsContent value="advance">
 
