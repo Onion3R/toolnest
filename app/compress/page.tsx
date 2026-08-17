@@ -1,5 +1,5 @@
 "use client"
-import { Upload, Image, X, Check } from "lucide-react"
+import { Upload, Image, X, Check, LoaderCircle } from "lucide-react"
 import React from "react"
 import imageCompression from "browser-image-compression"
 import { Button } from "@/components/ui/button"
@@ -14,6 +14,7 @@ export default function page() {
 	const [files, setFiles] = React.useState<File[]>([])
 	const [progress, setProgress] = React.useState(0);
 	const [compressingFile, setCompressingFile] = React.useState<string | null>(null)
+	const [compressedFiles, setCompressedFiles] = React.useState<{ id: string; fileSize: number }[]>([])
 	const [isCompressing, setIsCompressing] = React.useState(false)
 	// const [settings, setSettings] = React.useState({ maxSizeMB: 1, initialQuality: 0.8, maxWidthOrHeight: 1920, useWebWorker: true, format: "JPEG" })
 	const [settings, setSettings] = React.useState({ initialQuality: 0.8, format: 'JPEG' })
@@ -53,17 +54,7 @@ export default function page() {
 
 	async function compressImage(files: File[]) {
 
-		// const options = {
-		// 	maxSizeMB: settings.maxSizeMB,
-		// 	initialQuality: settings.initialQuality,
-		// 	maxWidthOrHeight: settings.maxWidthOrHeight,
-		// 	useWebWorker: settings.useWebWorker,
-		// 	format: settings.format,
 
-		// 	onProgress: (progress: number) => {
-		// 		setProgress(progress);
-		// 	},
-		// };
 		setIsCompressing(true)
 		const options = {
 			initialQuality: settings.initialQuality,
@@ -99,6 +90,8 @@ export default function page() {
 				link.click();
 
 				URL.revokeObjectURL(url);
+				setCompressedFiles([...compressedFiles, { id: file.name, fileSize: file.size }])
+
 			}
 
 
@@ -191,11 +184,12 @@ export default function page() {
 
 												</div>
 											</div>
-											{ isCompressing && compressingFile != file.name && <Check/>}
-											<Button variant="ghost" onClick={() => handleRemoveFile(idx)}>
-												<X />
-											</Button>
 
+											{compressingFile === file.name ? <LoaderCircle className="animate-spin" size={14} /> :
+												compressedFiles.some((f) => f.id === file.name) ? <Check size={14} /> : <Button variant="ghost" onClick={() => handleRemoveFile(idx)}>
+													<X />
+												</Button>
+											}
 										</div>
 										{compressingFile === file.name && (
 											<Progress value={progress} className="w-full" />
