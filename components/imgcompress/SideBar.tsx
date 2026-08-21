@@ -35,7 +35,7 @@ const items = [
   { label: "JPEG", value: "JPEG" },
   { label: "PNG", value: "PNG" },
 ]
-function SideBar({ files, compressImage, settings, setSettings }: { files: File[], compressImage: (files: File[]) => void, settings: any, setSettings: React.Dispatch<React.SetStateAction<any>> }) {
+function SideBar({ files, compressImage, settings, setSettings, isCompressing, compressedFiles }: { files: File[], compressImage: (files: File[]) => void, settings: any, setSettings: React.Dispatch<React.SetStateAction<any>>, isCompressing: boolean, compressedFiles: { id: string, fileSize: number }[] }) {
   const quality = Number.isFinite(settings?.initialQuality) ? settings.initialQuality : 0.8
 
   return (
@@ -102,11 +102,11 @@ function SideBar({ files, compressImage, settings, setSettings }: { files: File[
         </FieldSet>
 
 
-        <Button size="lg" className="mt-4 w-full" onClick={() => compressImage(files)}>Compress Image</Button>
+        <Button size="lg" className="mt-4 w-full" onClick={() => compressImage(files)} disabled={compressedFiles.length === files.length || isCompressing}>Compress Image  </Button>
       </div>
 
     </motion.aside >
   )
 }
 
-export default SideBar
+export default SideBar  

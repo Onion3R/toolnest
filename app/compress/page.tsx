@@ -34,7 +34,6 @@ export default function page() {
 		if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
 			const droppedFiles = Array.from(event.dataTransfer.files)
 			setFiles(droppedFiles)
-			console.log("Dropped files:", droppedFiles)
 		}
 	}
 
@@ -46,7 +45,6 @@ export default function page() {
 				return
 			}
 			setFiles([...files, ...selectedFiles])
-			console.log("Selected files:", selectedFiles)
 		}
 	}
 
@@ -67,8 +65,6 @@ export default function page() {
 		};
 
 
-		console.log('clicking')
-		console.log('files', files)
 
 		try {
 
@@ -90,8 +86,7 @@ export default function page() {
 				link.click();
 
 				URL.revokeObjectURL(url);
-				setCompressedFiles([...compressedFiles, { id: file.name, fileSize: file.size }])
-
+						setCompressedFiles((current) => [...current, { id: file.name, fileSize: file.size }])
 			}
 
 
@@ -171,6 +166,7 @@ export default function page() {
 										variants={itemsVariant}
 										initial="hidden"
 										animate="visible"
+										onClick={()=>alert('click')}
 										className=" px-6 py-3 border w-full   rounded space-y-3"
 									>
 										<div className="flex justify-between items-center">
@@ -185,11 +181,21 @@ export default function page() {
 												</div>
 											</div>
 
-											{compressingFile === file.name ? <LoaderCircle className="animate-spin" size={14} /> :
-												compressedFiles.some((f) => f.id === file.name) ? <Check size={14} /> : <Button variant="ghost" onClick={() => handleRemoveFile(idx)}>
+											{compressingFile === file.name ? (
+												<LoaderCircle className="animate-spin" size={14} />
+											) : compressedFiles.some((compressedFile) => compressedFile.id === file.name) ? (
+												<Check size={14} />
+											) : (
+												<Button
+													variant="ghost"
+													onClick={(event) => {
+														event.stopPropagation()
+														handleRemoveFile(idx)
+													}}
+												>
 													<X />
 												</Button>
-											}
+											)}
 										</div>
 										{compressingFile === file.name && (
 											<Progress value={progress} className="w-full" />
@@ -204,7 +210,7 @@ export default function page() {
 
 				}
 			</motion.main>
-			<SideBar files={files} compressImage={compressImage} settings={settings} setSettings={setSettings} />
+			<SideBar files={files} compressImage={compressImage} settings={settings} setSettings={setSettings}  isCompressing={isCompressing} compressedFiles={compressedFiles} />
 		</div>
 	)
 }
