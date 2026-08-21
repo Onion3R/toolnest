@@ -57,14 +57,14 @@ export default function page() {
 		const options = {
 			initialQuality: settings.initialQuality,
 			useWebWorker: true,
-			format: settings.format,
+			fileType: `image/${settings.format.toLowerCase() === 'webp' ? 'webp' : settings.format.toLowerCase() === 'jpeg' ? 'jpeg' : 'png'}`,
 
 			onProgress: (progress: number) => {
 				setProgress(progress);
 			},
 		};
 
-
+		console.log(settings, 'settings')
 
 		try {
 
@@ -81,7 +81,9 @@ export default function page() {
 
 				const link = document.createElement("a");
 				link.href = url;
-				link.download = `compressed-${file.name}`;
+				const originalName = file.name.replace(/\.[^/.]+$/, "");
+				const extension = settings.format.toLowerCase() === "jpeg" ? "jpg" : settings.format.toLowerCase();
+				link.download = `compressed-${originalName}.${extension}`;
 
 				link.click();
 
