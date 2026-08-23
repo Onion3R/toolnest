@@ -40,7 +40,8 @@ function SideBar({ files, compressImage, settings, setSettings, isCompressing, c
 
   return (
     <motion.aside
-      className={`${files.length > 0 ? "flex" : "hidden"} w-full flex-col bg-accent lg:fixed lg:bottom-0 lg:right-0 lg:top-0 lg:flex lg:w-1/4`}>
+      animate={files.length > 0 ? { x: 0 } : { x: 400 }}
+      className={` flex w-full flex-col bg-accent lg:fixed lg:bottom-0 lg:right-0 lg:top-0 lg:flex lg:w-1/4`}>
       <div className="flex h-full w-full flex-col justify-between p-4 md:p-6">
 
         <FieldSet className="w-full ">
@@ -72,9 +73,9 @@ function SideBar({ files, compressImage, settings, setSettings, isCompressing, c
                 </FieldDescription>
               </Field>
               <Field>
-              <FieldLabel htmlFor="format">Format</FieldLabel>
+                <FieldLabel htmlFor="format">Format</FieldLabel>
                 <Select items={items} value={settings.format} onValueChange={(value) => setSettings({ ...settings, format: value })}>
-                    <SelectTrigger className="w-full sm:w-45">
+                  <SelectTrigger className="w-full sm:w-45">
                     <SelectValue placeholder="Format" />
                   </SelectTrigger>
                   <SelectContent>
