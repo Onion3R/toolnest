@@ -40,20 +40,19 @@ function SideBar({ files, compressImage, settings, setSettings, isCompressing, c
 
   return (
     <motion.aside
-      animate={files.length > 0 ? { width: "25%" } : { width: "0%" }}
-      className="fixed bottom-0 top-0 w-1/4  right-0 bg-accent ">
-      <div className="p-4 flex justify-between h-full  flex-col w-full min-w-90 ">
+      className={`${files.length > 0 ? "flex" : "hidden"} w-full flex-col bg-accent lg:fixed lg:bottom-0 lg:right-0 lg:top-0 lg:flex lg:w-1/4`}>
+      <div className="flex h-full w-full flex-col justify-between p-4 md:p-6">
 
         <FieldSet className="w-full ">
 
           <Tabs defaultValue="account" >
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3  ">
+            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3">
                 <Settings2 size={14} />
                 <h1 >Settings</h1>
 
               </div>
-              <TabsList>
+              <TabsList className="w-full sm:w-auto">
                 <TabsTrigger value="account">Account</TabsTrigger>
                 <TabsTrigger value="advance" disabled={true}>Advance</TabsTrigger>
               </TabsList>
@@ -73,9 +72,9 @@ function SideBar({ files, compressImage, settings, setSettings, isCompressing, c
                 </FieldDescription>
               </Field>
               <Field>
-                <FieldLabel htmlFor="format">Format    </FieldLabel>
+              <FieldLabel htmlFor="format">Format</FieldLabel>
                 <Select items={items} value={settings.format} onValueChange={(value) => setSettings({ ...settings, format: value })}>
-                  <SelectTrigger className="w-45">
+                    <SelectTrigger className="w-full sm:w-45">
                     <SelectValue placeholder="Format" />
                   </SelectTrigger>
                   <SelectContent>
@@ -102,7 +101,7 @@ function SideBar({ files, compressImage, settings, setSettings, isCompressing, c
         </FieldSet>
 
 
-        <Button size="lg" className="mt-4 w-full" onClick={() => compressImage(files)} disabled={compressedFiles.length === files.length || isCompressing}>Compress Image  </Button>
+        <Button size="lg" className="mt-4 w-full" onClick={() => compressImage(files)} disabled={compressedFiles.length === files.length || isCompressing}>Compress Image</Button>
       </div>
 
     </motion.aside >

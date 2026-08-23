@@ -125,16 +125,15 @@ export default function page() {
 	}
 
 	return (
-		<div className="flex min-h-screen h-full   p-4">
+		<div className="flex min-h-screen h-full flex-col gap-6 p-4 lg:flex-row">
 			<motion.main
-				animate={files.length > 0 ? { width: "75%" } : { width: "100%" }}
-				className="  flex-center  flex-col">
-				<div >
+				className={`flex w-full flex-col items-center ${files.length > 0 ? "lg:w-3/4" : "lg:w-full"}`}>
+				<div className="w-full max-w-200">
 					<div
 						onDragOver={handleDragOver}
 						onDragLeave={handleDragLeave}
 						onDrop={handleDrop}
-						className={`border-2 border-dashed rounded mt-4 h-100  w-200! flex flex-col items-center justify-center cursor-pointer   ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-400"
+						className={`mt-4 flex h-72 w-full cursor-pointer flex-col items-center justify-center rounded border-2 border-dashed px-4 text-center md:h-100 ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-400"
 							}`}
 					>
 						<input
@@ -144,11 +143,11 @@ export default function page() {
 							multiple
 							onChange={handleFileSelect}
 						/>
-						<label htmlFor="file-input" className="flex flex-col items-center  h-full w-full flex-center">
+						<label htmlFor="file-input" className="flex h-full w-full flex-col items-center justify-center">
 							<div className="p-2 bg-white rounded-full w-15 h-15 flex items-center justify-center mb-2">
 								<Upload className="text-muted-foreground" />
 							</div>``
-							<h1 className="text-2xl font-semibold">Upload Documents</h1>
+							<h1 className="text-xl font-semibold md:text-2xl">Upload Documents</h1>
 							<p className="mt-2 text-sm text-muted-foreground">
 								Maximum files 5 • Format Supported JPEG, PNG, WEBP
 							</p>
@@ -158,7 +157,7 @@ export default function page() {
 
 
 				{files.length > 0 && (
-					<div className="flex-center flex-col w-200">
+					<div className="flex w-full max-w-200 flex-col">
 
 						<motion.div variants={itemsContainer} initial="hidden" animate="show" className="w-full">
 							<ul className="mt-4 text-left space-y-2 text-sm">
@@ -169,16 +168,16 @@ export default function page() {
 										initial="hidden"
 										animate="visible"
 										onClick={()=>alert('click')}
-										className=" px-6 py-3 border w-full   rounded space-y-3"
+											className="w-full space-y-3 rounded border px-3 py-3 sm:px-6"
 									>
 										<div className="flex justify-between items-center">
 											<div className="flex-center gap-4">
 												<div className="bg-accent flex-center  rounded-2xl w-10 h-10">
 													<Image strokeWidth={1} />
 												</div>
-												<div>
+													<div className="min-w-0">
 													{file.name}
-													<p className="text-muted-foreground">JPG  • {Math.round(file.size / 1024)} KB</p>
+															<p className="text-muted-foreground">JPG  • {Math.round(file.size / 1024)} KB</p>
 
 												</div>
 											</div>
