@@ -75,7 +75,7 @@ function SideBar({ files, compressImage, settings, setSettings, isCompressing, c
               <Field>
                 <FieldLabel htmlFor="format">Format</FieldLabel>
                 <Select items={items} value={settings.format} onValueChange={(value) => setSettings({ ...settings, format: value })}>
-                  <SelectTrigger className="w-full sm:w-45">
+                  <SelectTrigger className="w-full ">
                     <SelectValue placeholder="Format" />
                   </SelectTrigger>
                   <SelectContent>

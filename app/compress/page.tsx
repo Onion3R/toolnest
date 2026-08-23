@@ -9,12 +9,12 @@ import SideBar from "@/components/imgcompress/SideBar"
 
 const values = [{ id: 'low', label: 'Low', value: 0.2 }, { id: 'medium', label: 'Medium', value: 0.5 }, { id: 'high', label: 'High', value: 0.8 }]
 
-export default function page() {
+export default function CompressPage() {
 	const [isDragging, setIsDragging] = React.useState(false)
 	const [files, setFiles] = React.useState<File[]>([])
 	const [progress, setProgress] = React.useState(0);
 	const [compressingFile, setCompressingFile] = React.useState<string | null>(null)
-	const [compressedFiles, setCompressedFiles] = React.useState<{ id: string; fileSize: number }[]>([])
+	const [compressedFiles, setCompressedFiles] = React.useState<{ id: string; fileSize: number; file: File }[]>([])
 	const [isCompressing, setIsCompressing] = React.useState(false)
 	// const [settings, setSettings] = React.useState({ maxSizeMB: 1, initialQuality: 0.8, maxWidthOrHeight: 1920, useWebWorker: true, format: "JPEG" })
 	const [settings, setSettings] = React.useState({ initialQuality: 0.8, format: 'JPEG' })
@@ -77,18 +77,9 @@ export default function page() {
 
 				const compressedFile = await imageCompression(file, options);
 
-				const url = URL.createObjectURL(compressedFile);
+				setCompressedFiles((current) => [...current, { id: file.name, fileSize: compressedFile.size, file: compressedFile }])
 
-				const link = document.createElement("a");
-				link.href = url;
-				const originalName = file.name.replace(/\.[^/.]+$/, "");
-				const extension = settings.format.toLowerCase() === "jpeg" ? "jpg" : settings.format.toLowerCase();
-				link.download = `compressed-${originalName}.${extension}`;
 
-				link.click();
-
-				URL.revokeObjectURL(url);
-						setCompressedFiles((current) => [...current, { id: file.name, fileSize: file.size }])
 			}
 
 
@@ -101,6 +92,7 @@ export default function page() {
 			setCompressingFile(null);
 			setProgress(0);
 			setIsCompressing(false)
+			console.log(compressedFiles, 'compressedFiles')
 		}
 
 
@@ -108,6 +100,31 @@ export default function page() {
 
 	const handleRemoveFile = (index: number) => {
 		setFiles(files.filter((_, i) => i !== index));
+	}
+
+	const getCompressedFile = (fileName: string) =>
+		compressedFiles.find((compressedFile) => compressedFile.id === fileName)?.file
+
+	const handlePreview = (fileName: string) => {
+		const compressedFile = getCompressedFile(fileName)
+		if (!compressedFile) return
+
+		const url = URL.createObjectURL(compressedFile)
+		window.open(url, "_blank", "noopener,noreferrer")
+	}
+
+	const handleDownload = (fileName: string) => {
+		const compressedFile = getCompressedFile(fileName)
+		if (!compressedFile) return
+
+		const url = URL.createObjectURL(compressedFile)
+		const link = document.createElement("a")
+		const originalName = fileName.replace(/\.[^/.]+$/, "")
+		const extension = settings.format.toLowerCase() === "jpeg" ? "jpg" : settings.format.toLowerCase()
+		link.href = url
+		link.download = `compressed-${originalName}.${extension}`
+		link.click()
+		URL.revokeObjectURL(url)
 	}
 
 	const itemsContainer = {
@@ -122,6 +139,11 @@ export default function page() {
 	const itemsVariant = {
 		hidden: { opacity: 0, x: -20 },
 		visible: { opacity: 1, x: 0, },
+	}
+	const downloadTimer = () => {
+		setTimeout(() => {
+			return true
+		}, 1000)
 	}
 
 	return (
@@ -167,17 +189,20 @@ export default function page() {
 										variants={itemsVariant}
 										initial="hidden"
 										animate="visible"
-										onClick={()=>alert('click')}
-											className="w-full space-y-3 rounded border px-3 py-3 sm:px-6"
+										onClick={() => alert('click')}
+										className="w-full space-y-3 rounded border px-3 py-3 sm:px-6"
 									>
 										<div className="flex justify-between items-center">
 											<div className="flex-center gap-4">
 												<div className="bg-accent flex-center  rounded-2xl w-10 h-10">
 													<Image strokeWidth={1} />
 												</div>
-													<div className="min-w-0">
+												<div className="min-w-0">
 													{file.name}
-															<p className="text-muted-foreground">JPG  • {Math.round(file.size / 1024)} KB</p>
+													<p className="text-muted-foreground">JPG  • {Math.round(file.size / 1024)} KB</p>
+													{compressedFiles.some((compressedFile) => compressedFile.id === file.name) && (
+														<p className="text-muted-foreground">Compressed Size: {Math.round((compressedFiles.find((compressedFile) => compressedFile.id === file.name)?.fileSize ?? 0) / 1024)} KB</p>
+													)}
 
 												</div>
 											</div>
@@ -185,7 +210,16 @@ export default function page() {
 											{compressingFile === file.name ? (
 												<LoaderCircle className="animate-spin" size={14} />
 											) : compressedFiles.some((compressedFile) => compressedFile.id === file.name) ? (
-												<Check size={14} />
+												<div className="flex gap-2">
+													<Button onClick={(event) => {
+														event.stopPropagation()
+														handlePreview(file.name)
+													}}>Preview</Button>
+													<Button onClick={(event) => {
+														event.stopPropagation()
+														handleDownload(file.name)
+													}}>Download</Button>
+												</div>
 											) : (
 												<Button
 													variant="ghost"
@@ -211,7 +245,7 @@ export default function page() {
 
 				}
 			</motion.main>
-			<SideBar files={files} compressImage={compressImage} settings={settings} setSettings={setSettings}  isCompressing={isCompressing} compressedFiles={compressedFiles} />
+			<SideBar files={files} compressImage={compressImage} settings={settings} setSettings={setSettings} isCompressing={isCompressing} compressedFiles={compressedFiles} />
 		</div>
 	)
 }
