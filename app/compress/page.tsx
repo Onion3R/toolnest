@@ -22,11 +22,12 @@ const values = [{ id: 'low', label: 'Low', value: 0.2 }, { id: 'medium', label: 
 
 export default function CompressPage() {
 	const [isDragging, setIsDragging] = React.useState(false)
+	const [isDownloading, setIsDownloading] = React.useState(false)
 	const [files, setFiles] = React.useState<File[]>([])
 	const [progress, setProgress] = React.useState(0);
 	const [compressingFile, setCompressingFile] = React.useState<string | null>(null)
 	const [compressedFiles, setCompressedFiles] = React.useState<{ id: string; fileSize: number; file: File }[]>([])
-	const [previewImage, setPreviewImage] = React.useState<string | null>(null)
+	const [previewImage, setPreviewImage] = React.useState<{ fileName: string; url: string } | null>(null)
 	const [error, setError] = React.useState<{ message: string; state: boolean; onConfirm: () => void; onCancel: () => void } | null>(null)
 	const [isCompressing, setIsCompressing] = React.useState(false)
 	// const [settings, setSettings] = React.useState({ maxSizeMB: 1, initialQuality: 0.8, maxWidthOrHeight: 1920, useWebWorker: true, format: "JPEG" })
@@ -146,10 +147,11 @@ export default function CompressPage() {
 		if (!compressedFile) return
 
 		const url = URL.createObjectURL(compressedFile)
-		setPreviewImage(url)
+		setPreviewImage({ fileName, url })
 	}
 
 	const handleDownload = (fileName: string) => {
+		setIsDownloading(true)
 		const compressedFile = getCompressedFile(fileName)
 		if (!compressedFile) return
 
@@ -161,6 +163,14 @@ export default function CompressPage() {
 		link.download = `compressed-${originalName}.${extension}`
 		link.click()
 		URL.revokeObjectURL(url)
+
+		setIsDownloading(false)
+	}
+
+	const handleDownloadAll = () => {
+		for (const compressedFile of compressedFiles) {
+			handleDownload(compressedFile.id)
+		}
 	}
 
 	const itemsContainer = {
@@ -176,11 +186,7 @@ export default function CompressPage() {
 		hidden: { opacity: 0, x: -20 },
 		visible: { opacity: 1, x: 0, },
 	}
-	const downloadTimer = () => {
-		setTimeout(() => {
-			return true
-		}, 1000)
-	}
+
 
 	return (
 		<div className="relative flex min-h-screen h-full flex-col gap-6 p-4 lg:flex-row">
@@ -278,8 +284,11 @@ export default function CompressPage() {
 							</ul>
 
 						</motion.div>
+						<Button onClick={handleDownloadAll} className="mt-4">Download All</Button>
 					</div>
 				)
+
+
 
 				}
 			</motion.main>
@@ -304,10 +313,12 @@ export default function CompressPage() {
 				<div id='popup' className="absolute inset-0 z-2 h-full w-full flex-center bg-black/60 backdrop-blur-sm ">
 					<div className="flex gap-2 relative">
 						<div id="preview-container" className="p-2 bg-background rounded max-w-100">
-							<img src={previewImage || ''} alt="Preview" />
+							<img src={previewImage?.url || ''} alt="Preview" />
 						</div>
 						<div className="absolute -right-10 flex flex-col "><Button onClick={() => setPreviewImage(null)}><X /></Button>
-							<Button><Download /></Button></div>
+							<Button onClick={() => handleDownload(previewImage?.fileName)} disabled={isDownloading}>
+								{isDownloading ? <LoaderCircle className="animate-spin" /> : <Download />}
+							</Button></div>
 					</div>
 				</div>
 			)}
