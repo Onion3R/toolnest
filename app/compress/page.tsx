@@ -1,5 +1,5 @@
 "use client"
-import { Upload, Image, X, Check, LoaderCircle } from "lucide-react"
+import { Upload, Image, X, Check, LoaderCircle, Download } from "lucide-react"
 import React from "react"
 import imageCompression from "browser-image-compression"
 import { Button } from "@/components/ui/button"
@@ -15,6 +15,7 @@ export default function CompressPage() {
 	const [progress, setProgress] = React.useState(0);
 	const [compressingFile, setCompressingFile] = React.useState<string | null>(null)
 	const [compressedFiles, setCompressedFiles] = React.useState<{ id: string; fileSize: number; file: File }[]>([])
+	const [previewImage, setPreviewImage] = React.useState<string | null>(null)
 	const [isCompressing, setIsCompressing] = React.useState(false)
 	// const [settings, setSettings] = React.useState({ maxSizeMB: 1, initialQuality: 0.8, maxWidthOrHeight: 1920, useWebWorker: true, format: "JPEG" })
 	const [settings, setSettings] = React.useState({ initialQuality: 0.8, format: 'JPEG' })
@@ -48,6 +49,8 @@ export default function CompressPage() {
 		}
 	}
 
+
+	console.log(files, 'files')
 
 
 	async function compressImage(files: File[]) {
@@ -110,7 +113,7 @@ export default function CompressPage() {
 		if (!compressedFile) return
 
 		const url = URL.createObjectURL(compressedFile)
-		window.open(url, "_blank", "noopener,noreferrer")
+		setPreviewImage(url)
 	}
 
 	const handleDownload = (fileName: string) => {
@@ -147,9 +150,9 @@ export default function CompressPage() {
 	}
 
 	return (
-		<div className="flex min-h-screen h-full flex-col gap-6 p-4 lg:flex-row">
+		<div className="relative flex min-h-screen h-full flex-col gap-6 p-4 lg:flex-row">
 			<motion.main
-				className={`flex w-full flex-col items-center ${files.length > 0 ? "lg:w-3/4" : "lg:w-full"}`}>
+				className={`flex w-full flex-col  justify-center items-center ${files.length > 0 ? "lg:w-3/4" : "lg:w-full"}`}>
 				<div className="w-full max-w-200">
 					<div
 						onDragOver={handleDragOver}
@@ -168,7 +171,7 @@ export default function CompressPage() {
 						<label htmlFor="file-input" className="flex h-full w-full flex-col items-center justify-center">
 							<div className="p-2 bg-white rounded-full w-15 h-15 flex items-center justify-center mb-2">
 								<Upload className="text-muted-foreground" />
-							</div>``
+							</div>
 							<h1 className="text-xl font-semibold md:text-2xl">Upload Documents</h1>
 							<p className="mt-2 text-sm text-muted-foreground">
 								Maximum files 5 • Format Supported JPEG, PNG, WEBP
@@ -199,11 +202,12 @@ export default function CompressPage() {
 												</div>
 												<div className="min-w-0">
 													{file.name}
-													<p className="text-muted-foreground">JPG  • {Math.round(file.size / 1024)} KB</p>
-													{compressedFiles.some((compressedFile) => compressedFile.id === file.name) && (
-														<p className="text-muted-foreground">Compressed Size: {Math.round((compressedFiles.find((compressedFile) => compressedFile.id === file.name)?.fileSize ?? 0) / 1024)} KB</p>
-													)}
-
+													<div className="flex gap-2">
+														<p className="text-muted-foreground">JPG  • {Math.round(file.size / 1024)} KB</p>
+														{compressedFiles.some((compressedFile) => compressedFile.id === file.name) && (
+															<p className="text-muted-foreground"> {Math.round((compressedFiles.find((compressedFile) => compressedFile.id === file.name)?.fileSize ?? 0) / 1024)} KB</p>
+														)}
+													</div>
 												</div>
 											</div>
 
@@ -246,6 +250,17 @@ export default function CompressPage() {
 				}
 			</motion.main>
 			<SideBar files={files} compressImage={compressImage} settings={settings} setSettings={setSettings} isCompressing={isCompressing} compressedFiles={compressedFiles} />
+			{previewImage && (
+				<div id='popup' className="absolute inset-0 z-2 h-full w-full flex-center bg-black/60 backdrop-blur-sm ">
+					<div className="flex gap-2 relative">
+						<div id="preview-container" className="p-2 bg-background rounded">
+							<img src={previewImage || ''} alt="Preview" />
+						</div>
+						<div className="absolute -right-10 flex flex-col "><Button onClick={() => setPreviewImage(null)}><X /></Button>
+							<Button><Download /></Button></div>
+					</div>
+				</div>
+			)}
 		</div>
 	)
 }

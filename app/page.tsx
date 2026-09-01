@@ -10,6 +10,7 @@ function Page() {
   return (
     <div className="flex items-center justify-center h-screen">
     <Button onClick={() => router.push('/compress')}>Image Compressor</Button>
+    <Button onClick={() => router.push('/pdf-organizer')}>PDF Tool</Button>
     </div>
   )
 }
