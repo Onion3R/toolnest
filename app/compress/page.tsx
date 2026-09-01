@@ -6,6 +6,17 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { motion } from "motion/react";
 import SideBar from "@/components/imgcompress/SideBar"
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 const values = [{ id: 'low', label: 'Low', value: 0.2 }, { id: 'medium', label: 'Medium', value: 0.5 }, { id: 'high', label: 'High', value: 0.8 }]
 
@@ -16,6 +27,7 @@ export default function CompressPage() {
 	const [compressingFile, setCompressingFile] = React.useState<string | null>(null)
 	const [compressedFiles, setCompressedFiles] = React.useState<{ id: string; fileSize: number; file: File }[]>([])
 	const [previewImage, setPreviewImage] = React.useState<string | null>(null)
+	const [error, setError] = React.useState<{ message: string; state: boolean; onConfirm: () => void; onCancel: () => void } | null>(null)
 	const [isCompressing, setIsCompressing] = React.useState(false)
 	// const [settings, setSettings] = React.useState({ maxSizeMB: 1, initialQuality: 0.8, maxWidthOrHeight: 1920, useWebWorker: true, format: "JPEG" })
 	const [settings, setSettings] = React.useState({ initialQuality: 0.8, format: 'JPEG' })
@@ -39,18 +51,38 @@ export default function CompressPage() {
 	}
 
 	function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
-		if (event.target.files) {
-			const selectedFiles = Array.from(event.target.files)
-			if (files.length + selectedFiles.length > 5) {
-				alert("You can only upload a maximum of 5 files.")
-				return
-			}
-			setFiles([...files, ...selectedFiles])
+		const selectedFiles = Array.from(event.target.files ?? [])
+		if (selectedFiles.length === 0) return
+
+		if (compressedFiles.length > 0) {
+			setError({
+				message: "All compressed Files will be removed if you upload new files. Do you want to continue?", state: true, onConfirm: () => {
+					setCompressedFiles([])
+					setError(null)
+					uploadFile(selectedFiles, true)
+				}, onCancel: () => {
+					setError(null)
+				}
+			})
+
+			return
 		}
+
+		uploadFile(selectedFiles)
+		event.target.value = ""
 	}
 
+	const uploadFile = (selectedFiles: File[], replace = false) => {
+		setFiles((prev) => {
+			const nextFiles = replace ? selectedFiles : [...prev, ...selectedFiles]
+			if (nextFiles.length > 5) {
+				alert("You can only upload a maximum of 5 files.")
+				return prev
+			}
+			return nextFiles
+		})
+	}
 
-	console.log(files, 'files')
 
 
 	async function compressImage(files: File[]) {
@@ -97,6 +129,7 @@ export default function CompressPage() {
 			setIsCompressing(false)
 			console.log(compressedFiles, 'compressedFiles')
 		}
+
 
 
 	}
@@ -151,6 +184,7 @@ export default function CompressPage() {
 
 	return (
 		<div className="relative flex min-h-screen h-full flex-col gap-6 p-4 lg:flex-row">
+
 			<motion.main
 				className={`flex w-full flex-col  justify-center items-center ${files.length > 0 ? "lg:w-3/4" : "lg:w-full"}`}>
 				<div className="w-full max-w-200">
@@ -250,10 +284,26 @@ export default function CompressPage() {
 				}
 			</motion.main>
 			<SideBar files={files} compressImage={compressImage} settings={settings} setSettings={setSettings} isCompressing={isCompressing} compressedFiles={compressedFiles} />
+
+			<AlertDialog onOpenChange={() => setError(null)} open={error?.state || false}>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+						<AlertDialogDescription>
+							{error?.message}
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel onClick={error?.onCancel}>Cancel</AlertDialogCancel>
+						<AlertDialogAction onClick={error?.onConfirm}>Continue</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+
 			{previewImage && (
 				<div id='popup' className="absolute inset-0 z-2 h-full w-full flex-center bg-black/60 backdrop-blur-sm ">
 					<div className="flex gap-2 relative">
-						<div id="preview-container" className="p-2 bg-background rounded">
+						<div id="preview-container" className="p-2 bg-background rounded max-w-100">
 							<img src={previewImage || ''} alt="Preview" />
 						</div>
 						<div className="absolute -right-10 flex flex-col "><Button onClick={() => setPreviewImage(null)}><X /></Button>
