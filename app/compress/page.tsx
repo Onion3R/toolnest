@@ -1,5 +1,5 @@
 "use client"
-import { Upload, Image, X, Check, LoaderCircle, Download } from "lucide-react"
+import { Upload, Image, X, Check, LoaderCircle, Download, FolderSearch } from "lucide-react"
 import React from "react"
 import imageCompression from "browser-image-compression"
 import { Button } from "@/components/ui/button"
@@ -42,12 +42,25 @@ export default function CompressPage() {
 	}
 
 	function handleDrop(event: React.DragEvent<HTMLDivElement>) {
+		const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
 		event.preventDefault()
 		setIsDragging(false)
 
+
 		if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
 			const droppedFiles = Array.from(event.dataTransfer.files)
-			setFiles(droppedFiles)
+
+			const validFiles = droppedFiles.filter((file) => allowedTypes.includes(file.type))
+
+			const invalidFiles = droppedFiles.filter((file) => !allowedTypes.includes(file.type))
+
+			if (invalidFiles.length > 0) {
+				alert("Some files were not valid image types and were ignored.")
+				return
+			}
+
+			setFiles(validFiles)
 		}
 	}
 
@@ -201,22 +214,34 @@ export default function CompressPage() {
 						className={`mt-4 flex h-72 w-full cursor-pointer flex-col items-center justify-center rounded border-2 border-dashed px-4 text-center md:h-100 ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-400"
 							}`}
 					>
+
+
+						<div className="p-2 bg-white rounded-full w-15 h-15 flex items-center justify-center mb-2">
+							<Upload className="text-muted-foreground" />
+						</div>
+						{/* <h1 className="text-xl font-semibold md:text-2xl">Upload Documents</h1> */}
+						<p className="text-md">
+							Choose a file or drag & drop it here.
+						</p>
+						<p className="mt-2 text-sm text-muted-foreground">
+							Format Supported JPEG, PNG, WEBP
+						</p>
 						<input
 							type="file"
 							id="file-input"
 							className="hidden"
 							multiple
+							accept="image/jpeg,image/png,image/webp"
 							onChange={handleFileSelect}
 						/>
-						<label htmlFor="file-input" className="flex h-full w-full flex-col items-center justify-center">
-							<div className="p-2 bg-white rounded-full w-15 h-15 flex items-center justify-center mb-2">
-								<Upload className="text-muted-foreground" />
-							</div>
-							<h1 className="text-xl font-semibold md:text-2xl">Upload Documents</h1>
-							<p className="mt-2 text-sm text-muted-foreground">
-								Maximum files 5 • Format Supported JPEG, PNG, WEBP
-							</p>
+						<label htmlFor="file-input" className="flex-center gap-2 border  px-2 py-1 rounded mt-8 cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors">
+							<FolderSearch size={15} />
+							<p className="text-sm">Browse files</p>
 						</label>
+					</div>
+					<div className="text-sm flex items-center justify-between mt-4">
+						<p ><span className="text-muted-foreground"> Maximum files: </span> 5</p>
+						<p ><span className="text-muted-foreground"> Maximum file size: </span> 25MB</p>
 					</div>
 				</div>
 
@@ -232,49 +257,53 @@ export default function CompressPage() {
 										variants={itemsVariant}
 										initial="hidden"
 										animate="visible"
-										onClick={() => alert('click')}
-										className="w-full space-y-3 rounded border px-3 py-3 sm:px-6"
+
+										className="w-full space-y-3 rounded border bg-accent px-3 py-3 sm:px-6"
 									>
 										<div className="flex justify-between items-center">
-											<div className="flex-center gap-4">
-												<div className="bg-accent flex-center  rounded-2xl w-10 h-10">
-													<Image strokeWidth={1} />
+											<div className=" flex-center gap-4">
+												<div className=" ">
+													<Image strokeWidth={1} size={24} />
 												</div>
 												<div className="min-w-0">
 													{file.name}
 													<div className="flex gap-2">
-														<p className="text-muted-foreground">JPG  • {Math.round(file.size / 1024)} KB</p>
+														<p className="text-muted-foreground text-xs">File type: {file.type}   </p>
 														{compressedFiles.some((compressedFile) => compressedFile.id === file.name) && (
 															<p className="text-muted-foreground"> {Math.round((compressedFiles.find((compressedFile) => compressedFile.id === file.name)?.fileSize ?? 0) / 1024)} KB</p>
 														)}
+
 													</div>
+													{compressedFiles.some((compressedFile) => compressedFile.id === file.name) && <span className="text-primary text-xs">Completed</span>}
 												</div>
 											</div>
-
-											{compressingFile === file.name ? (
-												<LoaderCircle className="animate-spin" size={14} />
-											) : compressedFiles.some((compressedFile) => compressedFile.id === file.name) ? (
-												<div className="flex gap-2">
-													<Button onClick={(event) => {
-														event.stopPropagation()
-														handlePreview(file.name)
-													}}>Preview</Button>
-													<Button onClick={(event) => {
-														event.stopPropagation()
-														handleDownload(file.name)
-													}}>Download</Button>
-												</div>
-											) : (
-												<Button
-													variant="ghost"
-													onClick={(event) => {
-														event.stopPropagation()
-														handleRemoveFile(idx)
-													}}
-												>
-													<X />
-												</Button>
-											)}
+											<div className="flex items-center gap-2">
+										<span className="text-xs">	{Math.round(file.size / 1024)} KB</span>
+												{compressingFile === file.name ? (
+													<LoaderCircle className="animate-spin" size={14} />
+												) : compressedFiles.some((compressedFile) => compressedFile.id === file.name) ? (
+													<div className="flex gap-2">
+														<Button onClick={(event) => {
+															event.stopPropagation()
+															handlePreview(file.name)
+														}}>Preview</Button>
+														<Button onClick={(event) => {
+															event.stopPropagation()
+															handleDownload(file.name)
+														}}>Download</Button>
+													</div>
+												) : (
+													<Button
+														variant="ghost"
+														onClick={(event) => {
+															event.stopPropagation()
+															handleRemoveFile(idx)
+														}}
+													>
+														<X />
+													</Button>
+												)}
+											</div>
 										</div>
 										{compressingFile === file.name && (
 											<Progress value={progress} className="w-full" />
@@ -284,7 +313,11 @@ export default function CompressPage() {
 							</ul>
 
 						</motion.div>
-						<Button onClick={handleDownloadAll} className="mt-4">Download All</Button>
+
+						{compressedFiles.length > 0 && !isCompressing && (
+							<Button onClick={handleDownloadAll} className="mt-4">Download All</Button>
+
+						)}
 					</div>
 				)
 
