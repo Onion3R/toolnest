@@ -33,7 +33,7 @@ export default function CompressPage() {
 	const [progress, setProgress] = React.useState(0);
 	const [compressingFile, setCompressingFile] = React.useState<string | null>(null)
 	const [compressedFiles, setCompressedFiles] = React.useState<{ id: string; fileSize: number; file: File }[]>([])
-	const [previewImage, setPreviewImage] = React.useState<{ fileName: string; url: string } | null>(null)
+	const [previewImage, setPreviewImage] = React.useState<{ fileName: string; url: string; index: number } | null>(null)
 	const [error, setError] = React.useState<{ message: string; state: boolean; onConfirm: () => void; onCancel: () => void } | null>(null)
 	const [isCompressing, setIsCompressing] = React.useState(false)
 	// const [settings, setSettings] = React.useState({ maxSizeMB: 1, initialQuality: 0.8, maxWidthOrHeight: 1920, useWebWorker: true, format: "JPEG" })
@@ -161,12 +161,13 @@ export default function CompressPage() {
 	const getCompressedFile = (fileName: string) =>
 		compressedFiles.find((compressedFile) => compressedFile.id === fileName)?.file
 
-	const handlePreview = (fileName: string) => {
+	const handlePreview = (fileName: string, index: number) => {
+		console.log(index, 'index')
 		const compressedFile = getCompressedFile(fileName)
 		if (!compressedFile) return
 
 		const url = URL.createObjectURL(compressedFile)
-		setPreviewImage({ fileName, url })
+		setPreviewImage({ fileName, url, index })
 	}
 
 	const handleDownload = (fileName: string) => {
@@ -204,6 +205,18 @@ export default function CompressPage() {
 	const itemsVariant = {
 		hidden: { opacity: 0, x: -20 },
 		visible: { opacity: 1, x: 0, },
+	}
+
+	const handlePreviewNavigation = (direction: "next" | "prev") => {
+		if (!previewImage) return
+
+		const currentIndex = compressedFiles.findIndex((file) => file.id === previewImage.fileName)
+
+		if (currentIndex === -1) return
+
+		const nextindex = direction === 'next' ? currentIndex + 1 : currentIndex - 1
+
+		handlePreview(compressedFiles[nextindex]?.id, nextindex)
 	}
 
 
@@ -295,21 +308,21 @@ export default function CompressPage() {
 												) : compressedFiles.some((compressedFile) => compressedFile.id === file.name) ? (
 													<div className="flex-center ">
 														<Tooltip>
-															<TooltipTrigger >
-																<Button variant="ghost" onClick={(event) => {
-																	event.stopPropagation()
-																	handlePreview(file.name)
-																}}><Fullscreen /></Button></TooltipTrigger>
+															<TooltipTrigger render={<Button variant="ghost" onClick={(event) => {
+																event.stopPropagation()
+																handlePreview(file.name, idx)
+															}}><Fullscreen /></Button>} />
+
 															<TooltipContent>
 																<p>Preview</p>
 															</TooltipContent>
 														</Tooltip>
 														<Tooltip>
-															<TooltipTrigger >
-																<Button size={'sm'} variant="ghost" onClick={(event) => {
-																	event.stopPropagation()
-																	handleDownload(file.name)
-																}}><Download /></Button></TooltipTrigger>
+															<TooltipTrigger render={<Button size={'sm'} variant="ghost" onClick={(event) => {
+																event.stopPropagation()
+																handleDownload(file.name)
+															}}><Download /></Button>} />
+
 															<TooltipContent>
 																<p>Download</p>
 															</TooltipContent>
@@ -337,13 +350,14 @@ export default function CompressPage() {
 							</ul>
 
 						</motion.div>
-						<div className="flex items-center justify-between mt-2 px-2">
-							<span className="text-sm text-muted-foreground">Items: 0{files.length}</span>
-							{compressedFiles.length > 0 && !isCompressing && (
-								<Button onClick={handleDownloadAll} className="mt-4 gap-1 flex-center"><Download /> Download All</Button>
 
-							)}
-						</div>
+						{compressedFiles.length > 0 && !isCompressing && (
+							<div className="flex items-center justify-between mt-2 px-2">
+								<span className="text-sm text-muted-foreground">Items: 0{files.length}</span>
+								<Button onClick={handleDownloadAll} className="mt-4 gap-1 flex-center"><Download /> Download All</Button>
+							</div>
+						)}
+
 					</div>
 				)
 
@@ -369,7 +383,7 @@ export default function CompressPage() {
 			</AlertDialog>
 
 			{previewImage && (
-				<div id='popup' className="absolute inset-0 z-2 h-full w-full flex-center bg-black/60 backdrop-blur-sm ">
+				<div id='popup' className="fixed  inset-0 z-2 h-full w-full flex-center bg-black/60 backdrop-blur-sm ">
 					<div className="flex gap-2 relative">
 						<div id="preview-container" className="-ml-10 p-2 bg-background rounded max-w-100">
 							<img src={previewImage?.url || ''} alt="Preview" />
@@ -379,9 +393,21 @@ export default function CompressPage() {
 						<div className="absolute -left-20">
 							<Button variant="secondary" onClick={() => setPreviewImage(null)}><X /></Button>
 							<div className="flex flex-col  mt-4 bg-secondary rounded">
-								<Button variant="ghost" ><ChevronUp /></Button>
+
 								<Separator />
-								<Button variant="ghost"><ChevronDown /></Button>
+								<Tooltip >
+									<TooltipTrigger render={<Button variant="ghost" onClick={() => handlePreviewNavigation('prev')} disabled={previewImage?.index === 0}><ChevronUp /></Button>} />
+									<TooltipContent side={"left"}>
+										<p>Prev</p>
+									</TooltipContent>
+								</Tooltip>
+								<Tooltip >
+									<TooltipTrigger render={<Button variant="ghost" onClick={() => handlePreviewNavigation('next')} disabled={previewImage?.index === compressedFiles?.length - 1}><ChevronDown /></Button>} />
+									<TooltipContent side={"left"}>
+										<p>Next</p>
+									</TooltipContent>
+								</Tooltip>
+
 							</div>
 
 						</div>
