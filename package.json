@@ -17,6 +17,7 @@
     "browser-image-compression": "^2.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cn": "^0.2.5",
     "docx": "^9.7.1",
     "lucide-react": "^1.30.0",
     "motion": "^13.0.0",

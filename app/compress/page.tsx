@@ -1,11 +1,16 @@
 "use client"
-import { Upload, Image, X, Check, LoaderCircle, Download, FolderSearch, Fullscreen } from "lucide-react"
+import { Upload, Image, X, Check, LoaderCircle, Download, FolderSearch, Fullscreen, ExternalLink, ChevronUp, ChevronDown } from "lucide-react"
 import React from "react"
 import imageCompression from "browser-image-compression"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { motion } from "motion/react";
 import SideBar from "@/components/imgcompress/SideBar"
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip"
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -17,6 +22,7 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Separator } from "@/components/ui/separator"
 
 const values = [{ id: 'low', label: 'Low', value: 0.2 }, { id: 'medium', label: 'Medium', value: 0.5 }, { id: 'high', label: 'High', value: 0.8 }]
 
@@ -202,7 +208,7 @@ export default function CompressPage() {
 
 
 	return (
-		<div className="relative flex min-h-screen h-full flex-col gap-6 p-4 lg:flex-row">
+		<div className="relative flex min-h-screen h-full flex-col gap-6 p-8 lg:flex-row">
 
 			<motion.main
 				className={`flex w-full flex-col  justify-center items-center ${files.length > 0 ? "lg:w-3/4" : "lg:w-full"}`}>
@@ -287,15 +293,28 @@ export default function CompressPage() {
 												{compressingFile === file.name ? (
 													<LoaderCircle className="animate-spin" size={14} />
 												) : compressedFiles.some((compressedFile) => compressedFile.id === file.name) ? (
-													<div className="flex-center gap-2">
-														<Button variant="ghost" onClick={(event) => {
-															event.stopPropagation()
-															handlePreview(file.name)
-														}}><Fullscreen /></Button>
-														<Button size={'sm'} onClick={(event) => {
-															event.stopPropagation()
-															handleDownload(file.name)
-														}}><Download /></Button>
+													<div className="flex-center ">
+														<Tooltip>
+															<TooltipTrigger >
+																<Button variant="ghost" onClick={(event) => {
+																	event.stopPropagation()
+																	handlePreview(file.name)
+																}}><Fullscreen /></Button></TooltipTrigger>
+															<TooltipContent>
+																<p>Preview</p>
+															</TooltipContent>
+														</Tooltip>
+														<Tooltip>
+															<TooltipTrigger >
+																<Button size={'sm'} variant="ghost" onClick={(event) => {
+																	event.stopPropagation()
+																	handleDownload(file.name)
+																}}><Download /></Button></TooltipTrigger>
+															<TooltipContent>
+																<p>Download</p>
+															</TooltipContent>
+														</Tooltip>
+
 													</div>
 												) : (
 													<Button
@@ -318,11 +337,13 @@ export default function CompressPage() {
 							</ul>
 
 						</motion.div>
+						<div className="flex items-center justify-between mt-2 px-2">
+							<span className="text-sm text-muted-foreground">Items: 0{files.length}</span>
+							{compressedFiles.length > 0 && !isCompressing && (
+								<Button onClick={handleDownloadAll} className="mt-4 gap-1 flex-center"><Download /> Download All</Button>
 
-						{/* {compressedFiles.length > 0 && !isCompressing && (
-							<Button onClick={handleDownloadAll} className="mt-4">Download All</Button>
-
-						)} */}
+							)}
+						</div>
 					</div>
 				)
 
@@ -350,13 +371,30 @@ export default function CompressPage() {
 			{previewImage && (
 				<div id='popup' className="absolute inset-0 z-2 h-full w-full flex-center bg-black/60 backdrop-blur-sm ">
 					<div className="flex gap-2 relative">
-						<div id="preview-container" className="p-2 bg-background rounded max-w-100">
+						<div id="preview-container" className="-ml-10 p-2 bg-background rounded max-w-100">
 							<img src={previewImage?.url || ''} alt="Preview" />
 						</div>
-						<div className="absolute -right-10 flex flex-col "><Button onClick={() => setPreviewImage(null)}><X /></Button>
-							<Button onClick={() => handleDownload(previewImage?.fileName)} disabled={isDownloading}>
-								{isDownloading ? <LoaderCircle className="animate-spin" /> : <Download />}
-							</Button></div>
+
+
+						<div className="absolute -left-20">
+							<Button variant="secondary" onClick={() => setPreviewImage(null)}><X /></Button>
+							<div className="flex flex-col  mt-4 bg-secondary rounded">
+								<Button variant="ghost" ><ChevronUp /></Button>
+								<Separator />
+								<Button variant="ghost"><ChevronDown /></Button>
+							</div>
+
+						</div>
+						<div className="absolute -right-73 flex flex-col justify-end bottom-0 top-0  ">
+							<div className="relative  h-70 w-70 bg-background p-3 rounded">
+								<div className="flex gap-1">
+									<Button ><ExternalLink /></Button>
+									<Button className="flex-1 " onClick={() => handleDownload(previewImage?.fileName)} disabled={isDownloading}>
+										{isDownloading ? <LoaderCircle className="animate-spin" /> : <Download />} Download
+									</Button>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			)}
