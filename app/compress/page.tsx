@@ -1,5 +1,5 @@
 "use client"
-import { Upload, Image, X, Check, LoaderCircle, Download, FolderSearch } from "lucide-react"
+import { Upload, Image, X, Check, LoaderCircle, Download, FolderSearch, Fullscreen } from "lucide-react"
 import React from "react"
 import imageCompression from "browser-image-compression"
 import { Button } from "@/components/ui/button"
@@ -211,7 +211,7 @@ export default function CompressPage() {
 						onDragOver={handleDragOver}
 						onDragLeave={handleDragLeave}
 						onDrop={handleDrop}
-						className={`mt-4 flex h-72 w-full cursor-pointer flex-col items-center justify-center rounded border-2 border-dashed px-4 text-center md:h-100 ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-400"
+						className={`mt-4 flex h-72 w-full 	 flex-col items-center justify-center rounded border-2 border-dashed px-4 text-center md:h-100 ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-400"
 							}`}
 					>
 
@@ -258,39 +258,44 @@ export default function CompressPage() {
 										initial="hidden"
 										animate="visible"
 
-										className="w-full space-y-3 rounded border bg-accent px-3 py-3 sm:px-6"
+										className="w-full h-full space-y-3 rounded border bg-accent px-3 py-3 sm:px-6"
 									>
 										<div className="flex justify-between items-center">
-											<div className=" flex-center gap-4">
-												<div className=" ">
+											<div className=" flex-center gap-4 ">
+												<div>
 													<Image strokeWidth={1} size={24} />
 												</div>
-												<div className="min-w-0">
+												<div className="min-w-0 text-xs">
 													{file.name}
 													<div className="flex gap-2">
-														<p className="text-muted-foreground text-xs">File type: {file.type}   </p>
-														{compressedFiles.some((compressedFile) => compressedFile.id === file.name) && (
-															<p className="text-muted-foreground"> {Math.round((compressedFiles.find((compressedFile) => compressedFile.id === file.name)?.fileSize ?? 0) / 1024)} KB</p>
-														)}
+														<p className="text-muted-foreground text-xs">File type: {file.type.split("/")[1]}   </p>
+
 
 													</div>
-													{compressedFiles.some((compressedFile) => compressedFile.id === file.name) && <span className="text-primary text-xs">Completed</span>}
+
 												</div>
 											</div>
-											<div className="flex items-center gap-2">
-										<span className="text-xs">	{Math.round(file.size / 1024)} KB</span>
+											<div className="flex items-center gap-8">
+												<div className="flex-center gap-2 text-xs text-muted-foreground">
+
+													{compressedFiles.some((compressedFile) => compressedFile.id === file.name) ? (
+														<>	<s >	{Math.round(file.size / 1024)} KB</s>
+															<p > {Math.round((compressedFiles.find((compressedFile) => compressedFile.id === file.name)?.fileSize ?? 0) / 1024)} KB</p>
+														</>
+													) : <span >	{Math.round(file.size / 1024)} KB</span>}
+												</div>
 												{compressingFile === file.name ? (
 													<LoaderCircle className="animate-spin" size={14} />
 												) : compressedFiles.some((compressedFile) => compressedFile.id === file.name) ? (
-													<div className="flex gap-2">
-														<Button onClick={(event) => {
+													<div className="flex-center gap-2">
+														<Button variant="ghost" onClick={(event) => {
 															event.stopPropagation()
 															handlePreview(file.name)
-														}}>Preview</Button>
-														<Button onClick={(event) => {
+														}}><Fullscreen /></Button>
+														<Button size={'sm'} onClick={(event) => {
 															event.stopPropagation()
 															handleDownload(file.name)
-														}}>Download</Button>
+														}}><Download /></Button>
 													</div>
 												) : (
 													<Button
@@ -314,10 +319,10 @@ export default function CompressPage() {
 
 						</motion.div>
 
-						{compressedFiles.length > 0 && !isCompressing && (
+						{/* {compressedFiles.length > 0 && !isCompressing && (
 							<Button onClick={handleDownloadAll} className="mt-4">Download All</Button>
 
-						)}
+						)} */}
 					</div>
 				)
 
