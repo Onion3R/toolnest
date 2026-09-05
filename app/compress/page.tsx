@@ -23,8 +23,7 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Separator } from "@/components/ui/separator"
-
-const values = [{ id: 'low', label: 'Low', value: 0.2 }, { id: 'medium', label: 'Medium', value: 0.5 }, { id: 'high', label: 'High', value: 0.8 }]
+import { toast } from "@/components/ui/toast"
 
 export default function CompressPage() {
 	const [isDragging, setIsDragging] = React.useState(false)
@@ -73,16 +72,26 @@ export default function CompressPage() {
 	function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
 		const selectedFiles = Array.from(event.target.files ?? [])
 		const currentMb = selectedFiles.reduce((acc, file) => acc + file.size, 0) / (1024 * 1024)
-		
+
 		if (selectedFiles.length === 0) return
 
 		if (selectedFiles.some(file => !["image/jpeg", "image/png", "image/webp"].includes(file.type))) {
-			alert("Some files were not valid image types and were ignored.")
+
+			toast.add({
+				type: "error",
+				description: "Some files were not valid image types and were ignored.",
+				priority: "high",
+			})
 			return
 		}
 
-		if (currentMb > 25) {
-			alert("Total file size exceeds 10MB. Please select smaller files.")
+		if (currentMb > 1) {
+
+			toast.add({
+				type: "error",
+				description: "Total file size exceeds 25MB. Please select smaller files.",
+				priority: "high",
+			})
 			return
 		}
 
