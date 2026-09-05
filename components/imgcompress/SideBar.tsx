@@ -35,8 +35,16 @@ const items = [
   { label: "JPEG", value: "JPEG" },
   { label: "PNG", value: "PNG" },
 ]
-function SideBar({ files, compressImage, settings, setSettings, isCompressing, compressedFiles }: { files: File[], compressImage: (files: File[]) => void, settings: any, setSettings: React.Dispatch<React.SetStateAction<any>>, isCompressing: boolean, compressedFiles: { id: string, fileSize: number }[] }) {
+function SideBar({ files, compressImage, settings, setSettings, isCompressing, hasPendingChanges, setHasPendingChanges }: { files: File[], compressImage: (files: File[]) => void, settings: any, setSettings: React.Dispatch<React.SetStateAction<any>>, isCompressing: boolean, hasPendingChanges: boolean, setHasPendingChanges: React.Dispatch<React.SetStateAction<boolean>> }) {
   const quality = Number.isFinite(settings?.initialQuality) ? settings.initialQuality : 0.8
+
+  const hanldeOptionChange = (id: string, value: string | number) => {
+    setSettings({ ...settings, [id]: value })
+    if (hasPendingChanges) return
+    setHasPendingChanges(true)
+  }
+
+  console.log(hasPendingChanges, 'setHasPendingChanges')
 
   return (
     <motion.aside
@@ -66,7 +74,8 @@ function SideBar({ files, compressImage, settings, setSettings, isCompressing, c
                   value={[quality * 100]}
                   max={100}
                   step={1}
-                  onValueChange={(value: number | readonly number[]) => setSettings({ ...settings, initialQuality: Number(value) / 100 })}
+                  onValueChange={(value: number | readonly number[]) =>
+                    hanldeOptionChange('initialQuality', Number(value) / 100)}
                 />
                 <FieldDescription>
                   Controls how much visual quality to preserve {settings.initialQuality}.
@@ -74,7 +83,7 @@ function SideBar({ files, compressImage, settings, setSettings, isCompressing, c
               </Field>
               <Field>
                 <FieldLabel htmlFor="format">Format</FieldLabel>
-                <Select items={items} value={settings.format} onValueChange={(value) => setSettings({ ...settings, format: value })}>
+                <Select items={items} value={settings.format} onValueChange={(value) => hanldeOptionChange('format', value)}>
                   <SelectTrigger className="w-full ">
                     <SelectValue placeholder="Format" />
                   </SelectTrigger>
@@ -102,11 +111,13 @@ function SideBar({ files, compressImage, settings, setSettings, isCompressing, c
         </FieldSet>
 
 
-        <Button size="lg" className="mt-4 w-full" onClick={() => compressImage(files)} disabled={compressedFiles.length === files.length || isCompressing}>Compress Image</Button>
+        <Button size="lg" className="mt-4 w-full" onClick={() => compressImage(files)}
+          disabled={!hasPendingChanges || isCompressing}>Compress Image</Button>
       </div>
 
     </motion.aside >
   )
 }
 
-export default SideBar  
+export default SideBar
+

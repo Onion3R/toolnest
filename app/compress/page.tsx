@@ -1,6 +1,6 @@
 "use client"
 import { Upload, Image, X, Check, LoaderCircle, Download, FolderSearch, Fullscreen, ExternalLink, ChevronUp, ChevronDown } from "lucide-react"
-import React from "react"
+import React, { useEffectEvent } from "react"
 import imageCompression from "browser-image-compression"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
@@ -35,6 +35,7 @@ export default function CompressPage() {
 	const [previewImage, setPreviewImage] = React.useState<{ fileName: string; url: string; index: number } | null>(null)
 	const [error, setError] = React.useState<{ message: string; state: boolean; onConfirm: () => void; onCancel: () => void } | null>(null)
 	const [isCompressing, setIsCompressing] = React.useState(false)
+	const [hasPendingChanges, setHasPendingChanges] = React.useState(false)
 	// const [settings, setSettings] = React.useState({ maxSizeMB: 1, initialQuality: 0.8, maxWidthOrHeight: 1920, useWebWorker: true, format: "JPEG" })
 	const [settings, setSettings] = React.useState({ initialQuality: 0.8, format: 'JPEG' })
 	function handleDragOver(event: React.DragEvent<HTMLDivElement>) {
@@ -69,6 +70,8 @@ export default function CompressPage() {
 		}
 	}
 
+
+
 	function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
 		const selectedFiles = Array.from(event.target.files ?? [])
 		const currentMb = selectedFiles.reduce((acc, file) => acc + file.size, 0) / (1024 * 1024)
@@ -85,7 +88,7 @@ export default function CompressPage() {
 			return
 		}
 
-		if (currentMb > 1) {
+		if (currentMb > 25) {
 
 			toast.add({
 				type: "error",
@@ -126,6 +129,8 @@ export default function CompressPage() {
 		})
 	}
 
+
+	
 
 
 	async function compressImage(files: File[]) {
@@ -170,6 +175,7 @@ export default function CompressPage() {
 			setCompressingFile(null);
 			setProgress(0);
 			setIsCompressing(false)
+			setHasPendingChanges(false)
 			console.log(compressedFiles, 'compressedFiles')
 		}
 
@@ -388,7 +394,7 @@ export default function CompressPage() {
 
 				}
 			</motion.main>
-			<SideBar files={files} compressImage={compressImage} settings={settings} setSettings={setSettings} isCompressing={isCompressing} compressedFiles={compressedFiles} />
+			<SideBar files={files} compressImage={compressImage} settings={settings} setSettings={setSettings} isCompressing={isCompressing} compressedFiles={compressedFiles} hasPendingChanges={hasPendingChanges} setHasPendingChanges={setHasPendingChanges} />
 
 			<AlertDialog onOpenChange={() => setError(null)} open={error?.state || false}>
 				<AlertDialogContent>
