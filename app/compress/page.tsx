@@ -147,7 +147,6 @@ export default function CompressPage() {
 			},
 		};
 
-		console.log(settings, 'settings')
 
 		try {
 
@@ -176,7 +175,6 @@ export default function CompressPage() {
 			setProgress(0);
 			setIsCompressing(false)
 			setHasPendingChanges(false)
-			console.log(compressedFiles, 'compressedFiles')
 		}
 
 
@@ -191,7 +189,6 @@ export default function CompressPage() {
 		compressedFiles.find((compressedFile) => compressedFile.id === fileName)?.file
 
 	const handlePreview = (fileName: string, index: number) => {
-		console.log(index, 'index')
 		const compressedFile = getCompressedFile(fileName)
 		if (!compressedFile) return
 
@@ -250,7 +247,7 @@ export default function CompressPage() {
 
 
 	return (
-		<div className="relative flex min-h-screen h-full flex-col gap-6 p-8 lg:flex-row">
+		<div className="relative flex min-h-screen h-full flex-col gap-6 overflow-x-hidden p-8 lg:flex-row">
 
 			<motion.main
 				className={`flex w-full flex-col  justify-center items-center ${files.length > 0 ? "lg:w-3/4" : "lg:w-full"}`}>
@@ -394,7 +391,7 @@ export default function CompressPage() {
 
 				}
 			</motion.main>
-			<SideBar files={files} compressImage={compressImage} settings={settings} setSettings={setSettings} isCompressing={isCompressing} compressedFiles={compressedFiles} hasPendingChanges={hasPendingChanges} setHasPendingChanges={setHasPendingChanges} />
+			<SideBar files={files} compressImage={compressImage} settings={settings} setSettings={setSettings} isCompressing={isCompressing} hasPendingChanges={hasPendingChanges} setHasPendingChanges={setHasPendingChanges} />
 
 			<AlertDialog onOpenChange={() => setError(null)} open={error?.state || false}>
 				<AlertDialogContent>

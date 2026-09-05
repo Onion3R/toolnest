@@ -44,12 +44,11 @@ function SideBar({ files, compressImage, settings, setSettings, isCompressing, h
     setHasPendingChanges(true)
   }
 
-  console.log(hasPendingChanges, 'setHasPendingChanges')
 
   return (
     <motion.aside
-      animate={files.length > 0 ? { x: 0 } : { x: 400 }}
-      className={` flex w-full flex-col bg-accent lg:fixed lg:bottom-0 lg:right-0 lg:top-0 lg:flex lg:w-1/4`}>
+      animate={files.length > 0 ? { x: 0 } : { x: 1000 }}
+      className={` flex w-full flex-col bg-accent lg:fixed lg:bottom-0 lg:right-0 lg:top-0 lg:flex lg:w-1/4 `}>
       <div className="flex h-full w-full flex-col justify-between p-4 md:p-6">
 
         <FieldSet className="w-full ">
