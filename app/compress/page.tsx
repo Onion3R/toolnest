@@ -72,21 +72,35 @@ export default function CompressPage() {
 
 	function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
 		const selectedFiles = Array.from(event.target.files ?? [])
+		const currentMb = selectedFiles.reduce((acc, file) => acc + file.size, 0) / (1024 * 1024)
+		
 		if (selectedFiles.length === 0) return
 
-		if (compressedFiles.length > 0) {
-			setError({
-				message: "All compressed Files will be removed if you upload new files. Do you want to continue?", state: true, onConfirm: () => {
-					setCompressedFiles([])
-					setError(null)
-					uploadFile(selectedFiles, true)
-				}, onCancel: () => {
-					setError(null)
-				}
-			})
-
+		if (selectedFiles.some(file => !["image/jpeg", "image/png", "image/webp"].includes(file.type))) {
+			alert("Some files were not valid image types and were ignored.")
 			return
 		}
+
+		if (currentMb > 25) {
+			alert("Total file size exceeds 10MB. Please select smaller files.")
+			return
+		}
+
+		if (selectedFiles)
+
+			if (compressedFiles.length > 0) {
+				setError({
+					message: "All compressed Files will be removed if you upload new files. Do you want to continue?", state: true, onConfirm: () => {
+						setCompressedFiles([])
+						setError(null)
+						uploadFile(selectedFiles, true)
+					}, onCancel: () => {
+						setError(null)
+					}
+				})
+
+				return
+			}
 
 		uploadFile(selectedFiles)
 		event.target.value = ""
@@ -394,13 +408,14 @@ export default function CompressPage() {
 							<Button variant="secondary" onClick={() => setPreviewImage(null)}><X /></Button>
 							<div className="flex flex-col  mt-4 bg-secondary rounded">
 
-								<Separator />
+
 								<Tooltip >
 									<TooltipTrigger render={<Button variant="ghost" onClick={() => handlePreviewNavigation('prev')} disabled={previewImage?.index === 0}><ChevronUp /></Button>} />
 									<TooltipContent side={"left"}>
 										<p>Prev</p>
 									</TooltipContent>
 								</Tooltip>
+								<Separator className="bg-muted-foreground" />
 								<Tooltip >
 									<TooltipTrigger render={<Button variant="ghost" onClick={() => handlePreviewNavigation('next')} disabled={previewImage?.index === compressedFiles?.length - 1}><ChevronDown /></Button>} />
 									<TooltipContent side={"left"}>
