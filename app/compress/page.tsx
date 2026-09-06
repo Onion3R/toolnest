@@ -29,6 +29,7 @@ export default function CompressPage() {
 	const [hasPendingChanges, setHasPendingChanges] = React.useState(false)
 	// const [settings, setSettings] = React.useState({ maxSizeMB: 1, initialQuality: 0.8, maxWidthOrHeight: 1920, useWebWorker: true, format: "JPEG" })
 	const [settings, setSettings] = React.useState({ initialQuality: 0.8, format: 'JPEG' })
+	
 	function handleDragOver(event: React.DragEvent<HTMLDivElement>) {
 		event.preventDefault()
 		setIsDragging(true)
