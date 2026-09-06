@@ -4,7 +4,7 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { getFiles } from "@/lib/fileStorage";
 
-const PDFPreview = dynamic(() => import("@/components/pdforganizer/PDRPreview"), {
+const PDFPreview = dynamic(() => import("@/components/pdforganizer/PDFPreview"), {
   ssr: false,
 });
 

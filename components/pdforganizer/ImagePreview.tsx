@@ -1,5 +1,6 @@
 "use client"
 import React from "react";
+import Image from "next/image";
 function ImagePreview({ file }: { file: File }) {
   const [url, setUrl] = React.useState<string | null>(null);
 
@@ -9,7 +10,7 @@ function ImagePreview({ file }: { file: File }) {
     return () => URL.revokeObjectURL(objectUrl); // cleanup on unmount
   }, [file]);
 
-  return url ? <img src={url} alt="Preview" /> : null;
+  return url ? <Image src={url} alt="Preview" height={400} width={400} /> : null;
 }
 
 
