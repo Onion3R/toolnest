@@ -1,6 +1,6 @@
 "use client"
-import { Upload, Image, X, Check, LoaderCircle, Download, FolderSearch, Fullscreen, ExternalLink, ChevronUp, ChevronDown } from "lucide-react"
-import React, { useEffectEvent } from "react"
+import { Upload, Image, X, Check, LoaderCircle, Download, FolderSearch, Fullscreen, } from "lucide-react"
+import React from "react"
 import imageCompression from "browser-image-compression"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
@@ -11,19 +11,10 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip"
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Separator } from "@/components/ui/separator"
+
 import { toast } from "@/components/ui/toast"
+import PreviewImage from "@/components/imgcompress/PreviewImage"
+import ErrorDialog from "@/components/imgcompress/ErrorDialog"
 
 export default function CompressPage() {
 	const [isDragging, setIsDragging] = React.useState(false)
@@ -130,7 +121,7 @@ export default function CompressPage() {
 	}
 
 
-	
+
 
 
 	async function compressImage(files: File[]) {
@@ -391,65 +382,13 @@ export default function CompressPage() {
 
 				}
 			</motion.main>
+
 			<SideBar files={files} compressImage={compressImage} settings={settings} setSettings={setSettings} isCompressing={isCompressing} hasPendingChanges={hasPendingChanges} setHasPendingChanges={setHasPendingChanges} />
 
-			<AlertDialog onOpenChange={() => setError(null)} open={error?.state || false}>
-				<AlertDialogContent>
-					<AlertDialogHeader>
-						<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-						<AlertDialogDescription>
-							{error?.message}
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel onClick={error?.onCancel}>Cancel</AlertDialogCancel>
-						<AlertDialogAction onClick={error?.onConfirm}>Continue</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
+			<ErrorDialog error={error} setError={setError} />
 
 			{previewImage && (
-				<div id='popup' className="fixed  inset-0 z-2 h-full w-full flex-center bg-black/60 backdrop-blur-sm ">
-					<div className="flex gap-2 relative">
-						<div id="preview-container" className="-ml-10 p-2 bg-background rounded max-w-100">
-							<img src={previewImage?.url || ''} alt="Preview" />
-						</div>
-
-
-						<div className="absolute -left-20">
-							<Button variant="secondary" onClick={() => setPreviewImage(null)}><X /></Button>
-							<div className="flex flex-col  mt-4 bg-secondary rounded">
-
-
-								<Tooltip >
-									<TooltipTrigger render={<Button variant="ghost" onClick={() => handlePreviewNavigation('prev')} disabled={previewImage?.index === 0}><ChevronUp /></Button>} />
-									<TooltipContent side={"left"}>
-										<p>Prev</p>
-									</TooltipContent>
-								</Tooltip>
-								<Separator className="bg-muted-foreground" />
-								<Tooltip >
-									<TooltipTrigger render={<Button variant="ghost" onClick={() => handlePreviewNavigation('next')} disabled={previewImage?.index === compressedFiles?.length - 1}><ChevronDown /></Button>} />
-									<TooltipContent side={"left"}>
-										<p>Next</p>
-									</TooltipContent>
-								</Tooltip>
-
-							</div>
-
-						</div>
-						<div className="absolute -right-73 flex flex-col justify-end bottom-0 top-0  ">
-							<div className="relative  h-70 w-70 bg-background p-3 rounded">
-								<div className="flex gap-1">
-									<Button ><ExternalLink /></Button>
-									<Button className="flex-1 " onClick={() => handleDownload(previewImage?.fileName)} disabled={isDownloading}>
-										{isDownloading ? <LoaderCircle className="animate-spin" /> : <Download />} Download
-									</Button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
+				<PreviewImage previewImage={previewImage} handlePreviewNavigation={handlePreviewNavigation} handleDownload={handleDownload} setPreviewImage={setPreviewImage} isDownloading={isDownloading} compressedFiles={compressedFiles} />
 			)}
 		</div>
 	)

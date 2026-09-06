@@ -111,7 +111,7 @@ function SideBar({ files, compressImage, settings, setSettings, isCompressing, h
 
 
         <Button size="lg" className="mt-4 w-full" onClick={() => compressImage(files)}
-          disabled={!hasPendingChanges || isCompressing}>Compress Image</Button>
+          disabled={  !hasPendingChanges || isCompressing}>Compress Image</Button>
       </div>
 
     </motion.aside >
