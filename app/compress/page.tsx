@@ -15,6 +15,8 @@ import {
 import { toast } from "@/components/ui/toast"
 import PreviewImage from "@/components/imgcompress/PreviewImage"
 import ErrorDialog from "@/components/imgcompress/ErrorDialog"
+import { imageFileTypes } from "../pdf-organizer/page"
+
 
 export default function CompressPage() {
 	const [isDragging, setIsDragging] = React.useState(false)
@@ -29,10 +31,20 @@ export default function CompressPage() {
 	const [hasPendingChanges, setHasPendingChanges] = React.useState(false)
 	// const [settings, setSettings] = React.useState({ maxSizeMB: 1, initialQuality: 0.8, maxWidthOrHeight: 1920, useWebWorker: true, format: "JPEG" })
 	const [settings, setSettings] = React.useState({ initialQuality: 0.8, format: 'JPEG' })
-	
+
 	function handleDragOver(event: React.DragEvent<HTMLDivElement>) {
 		event.preventDefault()
+
+
+
 		setIsDragging(true)
+		const droppedFiles = Array.from(event.dataTransfer.files)
+
+		const invalidFiles = droppedFiles.filter((file) => !imageFileTypes.includes(file.type))
+
+		if(invalidFiles) {
+			event.dataTransfer.dropEffect = "none"
+		}
 	}
 
 	function handleDragLeave() {
@@ -40,7 +52,6 @@ export default function CompressPage() {
 	}
 
 	function handleDrop(event: React.DragEvent<HTMLDivElement>) {
-		const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
 		event.preventDefault()
 		setIsDragging(false)
@@ -49,9 +60,9 @@ export default function CompressPage() {
 		if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
 			const droppedFiles = Array.from(event.dataTransfer.files)
 
-			const validFiles = droppedFiles.filter((file) => allowedTypes.includes(file.type))
+			const validFiles = droppedFiles.filter((file) => imageFileTypes.includes(file.type))
 
-			const invalidFiles = droppedFiles.filter((file) => !allowedTypes.includes(file.type))
+			const invalidFiles = droppedFiles.filter((file) => !imageFileTypes.includes(file.type))
 
 			if (invalidFiles.length > 0) {
 				alert("Some files were not valid image types and were ignored.")
