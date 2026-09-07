@@ -38,13 +38,18 @@ export default function CompressPage() {
 
 
 		setIsDragging(true)
-		const droppedFiles = Array.from(event.dataTransfer.files)
+		if (event.dataTransfer.files.length < 0) return
+		const selectedFiles = Array.from(event.dataTransfer.items)
 
-		const invalidFiles = droppedFiles.filter((file) => !imageFileTypes.includes(file.type))
+		if (selectedFiles.some(file => !["image/jpeg", "image/png", "image/webp"].includes(file.type))) {
 
-		if (invalidFiles.length > 0) {
 			event.dataTransfer.dropEffect = "none"
+			return
 		}
+
+
+
+			
 	}
 
 	function handleDragLeave() {
