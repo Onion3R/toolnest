@@ -42,7 +42,7 @@ export default function CompressPage() {
 
 		const invalidFiles = droppedFiles.filter((file) => !imageFileTypes.includes(file.type))
 
-		if(invalidFiles) {
+		if (invalidFiles.length > 0) {
 			event.dataTransfer.dropEffect = "none"
 		}
 	}
@@ -50,6 +50,11 @@ export default function CompressPage() {
 	function handleDragLeave() {
 		setIsDragging(false)
 	}
+
+
+
+
+
 
 	function handleDrop(event: React.DragEvent<HTMLDivElement>) {
 
@@ -60,23 +65,17 @@ export default function CompressPage() {
 		if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
 			const droppedFiles = Array.from(event.dataTransfer.files)
 
-			const validFiles = droppedFiles.filter((file) => imageFileTypes.includes(file.type))
-
-			const invalidFiles = droppedFiles.filter((file) => !imageFileTypes.includes(file.type))
-
-			if (invalidFiles.length > 0) {
-				alert("Some files were not valid image types and were ignored.")
-				return
-			}
-
-			setFiles(validFiles)
+			handleDataValidation(droppedFiles)
 		}
 	}
 
 
-
 	function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
 		const selectedFiles = Array.from(event.target.files ?? [])
+		handleDataValidation(selectedFiles)
+	}
+
+	const handleDataValidation = (selectedFiles: File[]) => {
 		const currentMb = selectedFiles.reduce((acc, file) => acc + file.size, 0) / (1024 * 1024)
 
 		if (selectedFiles.length === 0) return
