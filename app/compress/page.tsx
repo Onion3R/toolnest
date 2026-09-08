@@ -30,6 +30,7 @@ export default function CompressPage() {
 	const [error, setError] = React.useState<{ message: string; state: boolean; onConfirm: () => void; onCancel: () => void } | null>(null)
 	const [isCompressing, setIsCompressing] = React.useState(false)
 	const [hasPendingChanges, setHasPendingChanges] = React.useState(false)
+	const [selectedFiles, setSelectedFiles] = React.useState<File[]>([])
 	// const [settings, setSettings] = React.useState({ maxSizeMB: 1, initialQuality: 0.8, maxWidthOrHeight: 1920, useWebWorker: true, format: "JPEG" })
 	const [settings, setSettings] = React.useState({ initialQuality: 0.8, format: 'JPEG' })
 
@@ -71,17 +72,17 @@ export default function CompressPage() {
 		if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
 			const droppedFiles = Array.from(event.dataTransfer.files)
 
-			handleDataValidation(event, droppedFiles)
+			handleDataValidation(droppedFiles)
 		}
 	}
 
 
 	function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
 		const selectedFiles = Array.from(event.target.files ?? [])
-		handleDataValidation(event, selectedFiles)
+		handleDataValidation(selectedFiles)
 	}
 
-	const handleDataValidation = (event: React.ChangeEvent<HTMLInputElement>, selectedFiles: File[]) => {
+	const handleDataValidation = (selectedFiles: File[]) => {
 		const currentMb = selectedFiles.reduce((acc, file) => acc + file.size, 0) / (1024 * 1024)
 
 		if (selectedFiles.length === 0) return
@@ -123,7 +124,6 @@ export default function CompressPage() {
 			}
 
 		uploadFile(selectedFiles)
-		event.target.value = ""
 	}
 
 	const uploadFile = (selectedFiles: File[], replace = false) => {
@@ -253,8 +253,12 @@ export default function CompressPage() {
 		handlePreview(compressedFiles[nextindex]?.id, nextindex)
 	}
 
-	const handleSelectAll = () => {
-
+	const handleSelectAll = (checked: boolean) => {
+		if (checked) {
+			setSelectedFiles(files)
+		} else {
+			setSelectedFiles([])
+		}
 	}
 
 
@@ -302,7 +306,10 @@ export default function CompressPage() {
 					</div>
 
 					<div className="flex items-center justify-between text-sm mt-4 px-2">
-						<span className="flex-center gap-1"><Checkbox /> Selected: 01</span>
+						<span className="flex-center gap-1"><Checkbox
+							checked={selectedFiles.length === files.length}
+							onCheckedChange={handleSelectAll}
+						/> Selected: {selectedFiles.length}</span>
 						<div className="flex-center ">
 							<Button variant="ghost" className="p-1">
 								<Trash size={14} className="" />
@@ -328,11 +335,11 @@ export default function CompressPage() {
 										initial="hidden"
 										animate="visible"
 
-										className="w-full h-full space-y-3 rounded border bg-accent px-3 py-3 sm:px-6 border-primary group "
+										className="w-full h-full space-y-3 rounded border bg-accent px-3 py-3 sm:px-6  group "
 									>
 										<div className="flex justify-between items-center">
 											<div className=" flex-center gap-4">
-												<Checkbox className="group-hover:opacity-100 group-hover:w-4 w-0 opacity-0 transition-all ease-in duration-75" />
+												<Checkbox className="group-hover:opacity-100 group-hover:w-4 w-0 opacity-0 transition-all ease-in duration-75" checked={selectedFiles.includes(file)}/>
 												<div>
 													<Image strokeWidth={1} size={24} />
 												</div>
