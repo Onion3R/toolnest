@@ -71,17 +71,17 @@ export default function CompressPage() {
 		if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
 			const droppedFiles = Array.from(event.dataTransfer.files)
 
-			handleDataValidation(droppedFiles)
+			handleDataValidation(event, droppedFiles)
 		}
 	}
 
 
 	function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
 		const selectedFiles = Array.from(event.target.files ?? [])
-		handleDataValidation(selectedFiles)
+		handleDataValidation(event, selectedFiles)
 	}
 
-	const handleDataValidation = (selectedFiles: File[]) => {
+	const handleDataValidation = (event: React.ChangeEvent<HTMLInputElement>, selectedFiles: File[]) => {
 		const currentMb = selectedFiles.reduce((acc, file) => acc + file.size, 0) / (1024 * 1024)
 
 		if (selectedFiles.length === 0) return
@@ -253,6 +253,10 @@ export default function CompressPage() {
 		handlePreview(compressedFiles[nextindex]?.id, nextindex)
 	}
 
+	const handleSelectAll = () => {
+
+	}
+
 
 	return (
 		<div className="relative flex min-h-screen h-full flex-col gap-6 overflow-x-hidden p-8 lg:flex-row">
@@ -328,7 +332,7 @@ export default function CompressPage() {
 									>
 										<div className="flex justify-between items-center">
 											<div className=" flex-center gap-4">
-												<Checkbox  className="group-hover:opacity-100 group-hover:w-4 w-0 opacity-0 transition-all ease-in duration-75"/>
+												<Checkbox className="group-hover:opacity-100 group-hover:w-4 w-0 opacity-0 transition-all ease-in duration-75" />
 												<div>
 													<Image strokeWidth={1} size={24} />
 												</div>
