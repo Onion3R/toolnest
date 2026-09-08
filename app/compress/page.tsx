@@ -1,5 +1,5 @@
 "use client"
-import { Upload, Image, X, Check, LoaderCircle, Download, FolderSearch, Fullscreen, } from "lucide-react"
+import { Upload, Trash, Image, X, Check, LoaderCircle, Download, FolderSearch, Fullscreen, RotateCw, } from "lucide-react"
 import React from "react"
 import imageCompression from "browser-image-compression"
 import { Button } from "@/components/ui/button"
@@ -16,6 +16,7 @@ import { toast } from "@/components/ui/toast"
 import PreviewImage from "@/components/imgcompress/PreviewImage"
 import ErrorDialog from "@/components/imgcompress/ErrorDialog"
 import { imageFileTypes } from "../pdf-organizer/page"
+import { Checkbox } from "@/components/ui/checkbox"
 
 
 export default function CompressPage() {
@@ -49,7 +50,7 @@ export default function CompressPage() {
 
 
 
-			
+
 	}
 
 	function handleDragLeave() {
@@ -259,6 +260,10 @@ export default function CompressPage() {
 			<motion.main
 				className={`flex w-full flex-col  justify-center items-center ${files.length > 0 ? "lg:w-3/4" : "lg:w-full"}`}>
 				<div className="w-full max-w-200">
+					<div className="text-sm flex items-center justify-between mt-4">
+						<p ><span className="text-muted-foreground"> Maximum files: </span> 5</p>
+						<p ><span className="text-muted-foreground"> Maximum file size: </span> 25MB</p>
+					</div>
 					<div
 						onDragOver={handleDragOver}
 						onDragLeave={handleDragLeave}
@@ -291,9 +296,18 @@ export default function CompressPage() {
 							<p className="text-sm">Browse files</p>
 						</label>
 					</div>
-					<div className="text-sm flex items-center justify-between mt-4">
-						<p ><span className="text-muted-foreground"> Maximum files: </span> 5</p>
-						<p ><span className="text-muted-foreground"> Maximum file size: </span> 25MB</p>
+
+					<div className="flex items-center justify-between text-sm mt-4 px-2">
+						<span className="flex-center gap-1"><Checkbox /> Selected: 01</span>
+						<div className="flex-center ">
+							<Button variant="ghost" className="p-1">
+								<Trash size={14} className="" />
+							</Button>
+							{/* <Button variant="ghost" className="p-1">
+								<RotateCw size={14} className="" />
+
+							</Button> */}
+						</div>
 					</div>
 				</div>
 
@@ -302,7 +316,7 @@ export default function CompressPage() {
 					<div className="flex w-full max-w-200 flex-col">
 
 						<motion.div variants={itemsContainer} initial="hidden" animate="show" className="w-full">
-							<ul className="mt-4 text-left space-y-2 text-sm">
+							<ul className="mt-2 text-left space-y-2 text-sm">
 								{files.map((file, idx) => (
 									<motion.li
 										key={idx}
@@ -310,10 +324,11 @@ export default function CompressPage() {
 										initial="hidden"
 										animate="visible"
 
-										className="w-full h-full space-y-3 rounded border bg-accent px-3 py-3 sm:px-6"
+										className="w-full h-full space-y-3 rounded border bg-accent px-3 py-3 sm:px-6 border-primary group "
 									>
 										<div className="flex justify-between items-center">
-											<div className=" flex-center gap-4 ">
+											<div className=" flex-center gap-4">
+												<Checkbox  className="group-hover:opacity-100 group-hover:w-4 w-0 opacity-0 transition-all ease-in duration-75"/>
 												<div>
 													<Image strokeWidth={1} size={24} />
 												</div>
