@@ -261,6 +261,13 @@ export default function CompressPage() {
 		}
 	}
 
+	const handleSelectFile = (file: File, checked: boolean) => {
+		if (checked) {
+			setSelectedFiles((prev) => [...prev, file])
+		} else {
+			setSelectedFiles((prev) => prev.filter((f) => f !== file))
+		}
+	}
 
 	return (
 		<div className="relative flex min-h-screen h-full flex-col gap-6 overflow-x-hidden p-8 lg:flex-row">
@@ -304,22 +311,23 @@ export default function CompressPage() {
 							<p className="text-sm">Browse files</p>
 						</label>
 					</div>
-
-					<div className="flex items-center justify-between text-sm mt-4 px-2">
-						<span className="flex-center gap-1"><Checkbox
-							checked={selectedFiles.length === files.length}
-							onCheckedChange={handleSelectAll}
-						/> Selected: {selectedFiles.length}</span>
-						<div className="flex-center ">
-							<Button variant="ghost" className="p-1">
-								<Trash size={14} className="" />
-							</Button>
-							{/* <Button variant="ghost" className="p-1">
+					{selectedFiles.length > 0 && (
+						<div className="flex items-center justify-between text-sm mt-4 px-2">
+							<span className="flex-center gap-1"><Checkbox
+								checked={selectedFiles.length === files.length}
+								onCheckedChange={handleSelectAll}
+							/> Selected: {selectedFiles.length}</span>
+							<div className="flex-center ">
+								<Button variant="ghost" className="p-1">
+									<Trash size={14} className="" />
+								</Button>
+								{/* <Button variant="ghost" className="p-1">
 								<RotateCw size={14} className="" />
 
 							</Button> */}
+							</div>
 						</div>
-					</div>
+					)}
 				</div>
 
 
@@ -339,7 +347,9 @@ export default function CompressPage() {
 									>
 										<div className="flex justify-between items-center">
 											<div className=" flex-center gap-4">
-												<Checkbox className="group-hover:opacity-100 group-hover:w-4 w-0 opacity-0 transition-all ease-in duration-75" checked={selectedFiles.includes(file)}/>
+												<Checkbox
+												style={{width: selectedFiles.includes(file) ? "1rem " : "", opacity: selectedFiles.includes(file) ? 100 : ""}} 
+												className="group-hover:opacity-100 group-hover:w-4 w-0 opacity-0 transition-all ease-in duration-75" checked={selectedFiles.includes(file)} onCheckedChange={(value) => handleSelectFile(file, value)} />
 												<div>
 													<Image strokeWidth={1} size={24} />
 												</div>
