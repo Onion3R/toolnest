@@ -15,14 +15,13 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-
+import type { DragEndEvent } from "@dnd-kit/core";
 
 
 type PDFPreviewProps = {
   files: any;
 };
 
-import SortableFile from "./SortableFile";
 import { imageFileTypes } from "@/app/pdf-organizer/page";
 import ImagePreview from "./ImagePreview";
 import SortablePage from "./SortablePage";
@@ -30,18 +29,30 @@ import SortablePage from "./SortablePage";
 
 export default function PDFPreview({ files }: PDFPreviewProps) {
   const [numPages, setNumPages] = React.useState(0)
+  const [pageOrder, setPageOrder] = React.useState<string[]>([]);
+
   if (!files || files.length === 0) {
     return <div>No file selected</div>;
   }
 
 
 
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    console.log("Dragged:", active.id);
+    console.log("Dropped over:", over.id);
+  }
   console.log(files, 'files')
 
   return (
     <div className="flex-center flex-col bg-accent gap-4">
 
-      <DndContext>
+      <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
         <SortableContext items={Array.from(
           { length: numPages },
           (_, i) => `${0}-${i}`
@@ -49,9 +60,10 @@ export default function PDFPreview({ files }: PDFPreviewProps) {
           {files.map((file: any, index: any) => (
 
             imageFileTypes.includes(file.type) ? (
-              <ImagePreview file={file} />
+              <ImagePreview key={index} file={file} />
             ) : (
               <Document
+                key={index}
                 file={file}
                 onLoadSuccess={({ numPages }) => setNumPages(numPages)}
               >

@@ -48,7 +48,7 @@ function SortablePage({
       style={style}
       {...attributes}
       {...listeners}
-      className="cursor-grab"
+      className="cursor-grab mt-4"
     >
       <Page
         pageNumber={pageNumber}
