@@ -1,5 +1,5 @@
 "use client"
-import { Upload, Trash, Image, X, Check, LoaderCircle, Download, FolderSearch, Fullscreen, RotateCw, } from "lucide-react"
+import { Upload, Trash, Image, X, Check, LoaderCircle, Download, FolderSearch, Fullscreen, RotateCw, ExternalLink, ArrowUpRight, } from "lucide-react"
 import React from "react"
 import imageCompression from "browser-image-compression"
 import { Button } from "@/components/ui/button"
@@ -269,6 +269,19 @@ export default function CompressPage() {
 		}
 	}
 
+	const handleRemoveSelectedFiles = () => {
+		selectedFiles.forEach((file) => {
+			const index = files.indexOf(file)
+			if (index !== -1) {
+				handleRemoveFile(index)
+				setSelectedFiles((prev) => prev.filter((f) => f !== file))
+
+			}
+		})
+	}
+
+	console.log(selectedFiles, 'selectedFiles')
+
 	return (
 		<div className="relative flex min-h-screen h-full flex-col gap-6 overflow-x-hidden p-8 lg:flex-row">
 
@@ -318,7 +331,7 @@ export default function CompressPage() {
 								onCheckedChange={handleSelectAll}
 							/> Selected: {selectedFiles.length}</span>
 							<div className="flex-center ">
-								<Button variant="ghost" className="p-1">
+								<Button variant="ghost" className="p-1" onClick={handleRemoveSelectedFiles}>
 									<Trash size={14} className="" />
 								</Button>
 								{/* <Button variant="ghost" className="p-1">
@@ -348,13 +361,29 @@ export default function CompressPage() {
 										<div className="flex justify-between items-center">
 											<div className=" flex-center gap-4">
 												<Checkbox
-												style={{width: selectedFiles.includes(file) ? "1rem " : "", opacity: selectedFiles.includes(file) ? 100 : ""}} 
-												className="group-hover:opacity-100 group-hover:w-4 w-0 opacity-0 transition-all ease-in duration-75" checked={selectedFiles.includes(file)} onCheckedChange={(value) => handleSelectFile(file, value)} />
+													style={{ width: selectedFiles.includes(file) ? "1rem " : "", opacity: selectedFiles.includes(file) ? 100 : "" }}
+													className="group-hover:opacity-100 group-hover:w-4 w-0 opacity-0 transition-all ease-in duration-75" checked={selectedFiles.includes(file)} onCheckedChange={(value) => handleSelectFile(file, value)} />
 												<div>
 													<Image strokeWidth={1} size={24} />
 												</div>
 												<div className="min-w-0 text-xs">
-													{file.name}
+													<p className="flex relative group">
+														{file.name}
+														<Tooltip>
+															<TooltipTrigger render={
+																<Button
+																	className="absolute -right-5 -top-1 p-0 group-hover:opacity-100 opacity-0"
+																	variant="ghost"
+																	onClick={(event) => {
+																		event.stopPropagation()
+																		handlePreview(file.name, idx)
+																	}}><ArrowUpRight /></Button>} />
+
+															<TooltipContent>
+																<p>Preview</p>
+															</TooltipContent>
+														</Tooltip>
+													</p>
 													<div className="flex gap-2">
 														<p className="text-muted-foreground text-xs">File type: {file.type.split("/")[1]}   </p>
 
@@ -376,16 +405,7 @@ export default function CompressPage() {
 													<LoaderCircle className="animate-spin" size={14} />
 												) : compressedFiles.some((compressedFile) => compressedFile.id === file.name) ? (
 													<div className="flex-center ">
-														<Tooltip>
-															<TooltipTrigger render={<Button variant="ghost" onClick={(event) => {
-																event.stopPropagation()
-																handlePreview(file.name, idx)
-															}}><Fullscreen /></Button>} />
 
-															<TooltipContent>
-																<p>Preview</p>
-															</TooltipContent>
-														</Tooltip>
 														<Tooltip>
 															<TooltipTrigger render={<Button size={'sm'} variant="ghost" onClick={(event) => {
 																event.stopPropagation()
