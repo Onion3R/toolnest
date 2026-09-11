@@ -1,16 +1,6 @@
 import React from 'react'
 import { Slider } from "@/components/ui/slider"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-  InputGroupText,
-  InputGroupTextarea,
-} from "@/components/ui/input-group"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+
 import {
   Select,
   SelectContent,
@@ -21,9 +11,7 @@ import {
 } from "@/components/ui/select"
 import {
   Field,
-  FieldContent,
   FieldDescription,
-  FieldGroup,
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field"
@@ -48,70 +36,69 @@ function SideBar({ files, compressImage, settings, setSettings, isCompressing, h
   return (
     <motion.aside
       animate={files.length > 0 ? { x: 0 } : { x: 1000 }}
-      className={` flex w-full flex-col bg-accent lg:fixed lg:bottom-0 lg:right-0 lg:top-0 lg:flex lg:w-1/4 `}>
+      className={` flex w-full flex-col bg-black lg:fixed lg:bottom-0 lg:right-0 lg:top-0 lg:flex lg:w-1/4 `}>
       <div className="flex h-full w-full flex-col justify-between p-4 md:p-6">
 
-        <FieldSet className="w-full ">
+        <FieldSet className="w-full text-white ">
 
-          <Tabs defaultValue="account" >
-            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-3">
-                <Settings2 size={14} />
-                <h1 >Settings</h1>
+          {/* <Tabs defaultValue="account" > */}
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
+            <div className="flex items-center gap-4">
+              <div className="p-1 bg-white rounded-xs text-black">
+                <Settings2 size={15} />
               </div>
-              <TabsList className="w-full sm:w-auto">
-                <TabsTrigger value="account">Account</TabsTrigger>
-                <TabsTrigger value="advance" disabled={true}>Advance</TabsTrigger>
-              </TabsList>
+              <div>
+                <h1 className="text-sm" >Settings</h1>
+                <p className="text-xs text-muted-foreground">Adjust your image compression settings</p>
+              </div>
+
+
             </div>
-            <TabsContent value="account">
+           
+          </div>
 
-              <Field>
-                <FieldLabel htmlFor="quality"> Quality</FieldLabel>
-                <Slider
-                  value={[quality * 100]}
-                  max={100}
-                  step={1}
-                  onValueChange={(value: number | readonly number[]) =>
-                    hanldeOptionChange('initialQuality', Number(value) / 100)}
-                />
-                <FieldDescription>
-                  Controls how much visual quality to preserve {settings.initialQuality}.
-                </FieldDescription>
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="format">Format</FieldLabel>
-                <Select items={items} value={settings.format} onValueChange={(value) => hanldeOptionChange('format', value)}>
-                  <SelectTrigger className="w-full ">
-                    <SelectValue placeholder="Format" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {items.map((item) => (
-                        <SelectItem key={item.value} value={item.value}>
-                          {item.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <FieldDescription>
-                  Set desired file size for compression.
-                </FieldDescription>
-              </Field>
-            </TabsContent>
-            <TabsContent value="advance">
-
-
-            </TabsContent>
-          </Tabs>
+          <Field>
+            <FieldLabel htmlFor="quality"> Quality</FieldLabel>
+            <Slider
+              value={[quality * 100]}
+              max={100}
+              step={1}
+              onValueChange={(value: number | readonly number[]) =>
+                hanldeOptionChange('initialQuality', Number(value) / 100)}
+              className=""
+            />
+            <FieldDescription>
+              Controls how much visual quality to preserve {settings.initialQuality}.
+            </FieldDescription>
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="format">Format</FieldLabel>
+            <Select items={items} value={settings.format} onValueChange={(value) => hanldeOptionChange('format', value)}>
+              <SelectTrigger className="w-full ">
+                <SelectValue placeholder="Format" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {items.map((item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <FieldDescription>
+              Set desired file size for compression.
+            </FieldDescription>
+          </Field>
+        
 
         </FieldSet>
 
 
-        <Button size="lg" className="mt-4 w-full" onClick={() => compressImage(files)}
-          disabled={  !hasPendingChanges || isCompressing}>Compress Image</Button>
+        <Button size="lg" className="mt-4 w-full bg-white text-primary hover:bg-white/20! hover:text-white/70" onClick={() => compressImage(files)}
+          disabled={!hasPendingChanges || isCompressing}>Compress Image</Button>
       </div>
 
     </motion.aside >
