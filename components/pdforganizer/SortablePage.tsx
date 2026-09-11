@@ -1,18 +1,8 @@
 
-import { imageFileTypes } from "@/app/pdf-organizer/page";
-import {
-  DndContext,
-  closestCenter,
-} from "@dnd-kit/core";
-
-import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/sortable";
 
 import { CSS } from "@dnd-kit/utilities";
-import { Document, Page, pdfjs } from "react-pdf";
+import { Page , pdfjs} from "react-pdf";
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
   import.meta.url
@@ -20,11 +10,9 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 
 function SortablePage({
   id,
-  file,
   pageNumber,
 }: {
   id: string;
-  file: File;
   pageNumber: number;
 }) {
   const {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Document, Page, pdfjs } from "react-pdf";
+import { Document } from "react-pdf";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -12,14 +12,14 @@ import {
 
 import {
   SortableContext,
-  useSortable,
   verticalListSortingStrategy,
+  arrayMove
 } from "@dnd-kit/sortable";
 import type { DragEndEvent } from "@dnd-kit/core";
 
 
 type PDFPreviewProps = {
-  files: any;
+  files: File[];
 };
 
 import { imageFileTypes } from "@/app/pdf-organizer/page";
@@ -28,7 +28,6 @@ import SortablePage from "./SortablePage";
 
 
 export default function PDFPreview({ files }: PDFPreviewProps) {
-  const [numPages, setNumPages] = React.useState(0)
   const [pageOrder, setPageOrder] = React.useState<string[]>([]);
 
   if (!files || files.length === 0) {
@@ -44,20 +43,31 @@ export default function PDFPreview({ files }: PDFPreviewProps) {
       return;
     }
 
-    console.log("Dragged:", active.id);
-    console.log("Dropped over:", over.id);
+    const activeId = active.id.toString();
+    const overId = over.id.toString();
+
+    if (activeId.split("-")[0] !== overId.split("-")[0]) {
+      return;
+    }
+
+    setPageOrder((items) => {
+      const oldIndex = items.indexOf(activeId);
+      const newIndex = items.indexOf(overId);
+
+      if (oldIndex === -1 || newIndex === -1) {
+        return items;
+      }
+
+      return arrayMove(items, oldIndex, newIndex);
+    });
   }
-  console.log(files, 'files')
 
   return (
     <div className="flex-center flex-col bg-accent gap-4">
 
       <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
-        <SortableContext items={Array.from(
-          { length: numPages },
-          (_, i) => `${0}-${i}`
-        )}>
-          {files.map((file: any, index: any) => (
+        <SortableContext items={pageOrder} strategy={verticalListSortingStrategy}>
+          {files.map((file, index) => (
 
             imageFileTypes.includes(file.type) ? (
               <ImagePreview key={index} file={file} />
@@ -65,12 +75,31 @@ export default function PDFPreview({ files }: PDFPreviewProps) {
               <Document
                 key={index}
                 file={file}
-                onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                onLoadSuccess={({ numPages }) => {
+                  setPageOrder((currentOrder) => {
+                    const loadedPageIds = Array.from(
+                      { length: numPages },
+                      (_, pageIndex) => `${index}-${pageIndex}`
+                    );
+                    const missingPageIds = loadedPageIds.filter(
+                      (pageId) => !currentOrder.includes(pageId)
+                    );
+
+                    return [...currentOrder, ...missingPageIds];
+                  });
+                }}
               >
-                {Array.from({ length: numPages }, (_, i) => (
-                  <SortablePage key={i} id={`${index}-${i}`} file={file} pageNumber={i + 1}
-                  />
-                ))}
+                {pageOrder.filter((id) => id.startsWith(`${index}-`)).map((id) => {
+                  const pageNumber = Number(id.slice(id.indexOf("-") + 1)) + 1;
+
+                  return (
+                    <SortablePage
+                      key={id}
+                      id={id}
+                      pageNumber={pageNumber}
+                    />
+                  );
+                })}
               </Document>
             )
           ))}

@@ -64,7 +64,7 @@ function page() {
             id="file-input"
             className="hidden"
             multiple
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/jpeg,image/png,image/webp,application/pdf"
           />
           <label htmlFor="file-input" className="flex-center gap-2 border  px-2 py-1 rounded mt-8 cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors">
             <FolderSearch size={15} />
