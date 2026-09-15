@@ -270,17 +270,19 @@ export default function CompressPage() {
 	}
 
 	const handleRemoveSelectedFiles = () => {
+		const files = selectedFiles
 		selectedFiles.forEach((file) => {
 			const index = files.indexOf(file)
 			if (index !== -1) {
-				handleRemoveFile(index)
-				setSelectedFiles((prev) => prev.filter((f) => f !== file))
+				files.filter((file) => file !== file)
+				console.log(index)
 
 			}
 		})
+
+		setFiles(files)
 	}
 
-	console.log(selectedFiles, 'selectedFiles')
 
 	return (
 		<div className="relative flex min-h-screen h-full flex-col gap-6 overflow-x-hidden p-8 lg:flex-row">
@@ -304,7 +306,7 @@ export default function CompressPage() {
 						{/* <div className="p-2 bg-white rounded-full w-15 h-15 flex items-center justify-center mb-2">
 						</div> */}
 
-							<img src="/folder.svg" alt="" className="w-25 h-25" />
+						<img src="/folder.svg" alt="" className="w-25 h-25" />
 
 						{/* <h1 className="text-xl font-semibold md:text-2xl">Upload Documents</h1> */}
 						<p className="text-md">
