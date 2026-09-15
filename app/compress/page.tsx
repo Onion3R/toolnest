@@ -296,7 +296,7 @@ export default function CompressPage() {
 						onDragOver={handleDragOver}
 						onDragLeave={handleDragLeave}
 						onDrop={handleDrop}
-						className={`mt-4 flex h-72 w-full 	 flex-col items-center justify-center rounded  px-4 text-center md:h-100 ${isDragging ? "border-blue-500 bg-blue-50" : "bg-gradient-to-br from-card to-card-foreground border-gray-400 "
+						className={`mt-4 flex h-72 w-full 	 flex-col items-center justify-center rounded  px-4 text-center md:h-100 ${isDragging ? "border-blue-500 bg-blue-50" : "bg-gradient-to-br from-card/69 via-card-foreground to-card-foreground/20 border-gray-400 "
 							}`}
 					>
 
@@ -304,7 +304,7 @@ export default function CompressPage() {
 						{/* <div className="p-2 bg-white rounded-full w-15 h-15 flex items-center justify-center mb-2">
 						</div> */}
 
-							<img src="/folder.svg" alt="" className="w-10 h-10" />
+							<img src="/folder.svg" alt="" className="w-25 h-25" />
 
 						{/* <h1 className="text-xl font-semibold md:text-2xl">Upload Documents</h1> */}
 						<p className="text-md">

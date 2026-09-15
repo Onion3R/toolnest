@@ -36,7 +36,7 @@ function SideBar({ files, compressImage, settings, setSettings, isCompressing, h
   return (
     <motion.aside
       animate={files.length > 0 ? { x: 0 } : { x: 1000 }}
-      className={` flex w-full flex-col bg-card lg:fixed lg:bottom-0 lg:right-0 lg:top-0 lg:flex lg:w-1/4 `}>
+      className={` flex w-full flex-col bg-card  border lg:fixed lg:bottom-0 lg:right-0 lg:top-0 lg:flex lg:w-1/4 `}>
       <div className="flex h-full w-full flex-col justify-between ">
 
         <FieldSet className="w-full text-white ">
