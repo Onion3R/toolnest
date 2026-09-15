@@ -296,14 +296,16 @@ export default function CompressPage() {
 						onDragOver={handleDragOver}
 						onDragLeave={handleDragLeave}
 						onDrop={handleDrop}
-						className={`mt-4 flex h-72 w-full 	 flex-col items-center justify-center rounded border-2 border-dashed px-4 text-center md:h-100 ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-400"
+						className={`mt-4 flex h-72 w-full 	 flex-col items-center justify-center rounded  px-4 text-center md:h-100 ${isDragging ? "border-blue-500 bg-blue-50" : "bg-gradient-to-br from-card to-card-foreground border-gray-400 "
 							}`}
 					>
 
 
-						<div className="p-2 bg-white rounded-full w-15 h-15 flex items-center justify-center mb-2">
-							<Upload className="text-muted-foreground" />
-						</div>
+						{/* <div className="p-2 bg-white rounded-full w-15 h-15 flex items-center justify-center mb-2">
+						</div> */}
+
+							<img src="/folder.svg" alt="" className="w-10 h-10" />
+
 						{/* <h1 className="text-xl font-semibold md:text-2xl">Upload Documents</h1> */}
 						<p className="text-md">
 							Choose a file or drag & drop it here.
@@ -356,7 +358,7 @@ export default function CompressPage() {
 										initial="hidden"
 										animate="visible"
 
-										className="w-full h-full space-y-3 rounded border bg-accent px-3 py-3 sm:px-6  group "
+										className="w-full h-full space-y-3 rounded  bg-card-foreground px-3 py-3 sm:px-6  group text-white! "
 									>
 										<div className="flex justify-between items-center">
 											<div className=" flex-center gap-4">
